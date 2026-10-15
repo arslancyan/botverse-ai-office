@@ -89,6 +89,57 @@ app.get('/api/health', async (_req, res) => {
 });
 app.use('/api', requireAuth);
 
+const AGENT_GUIDES = {
+  orbit: 'You are ORBIT, the studio lead. Break goals into clear, prioritized next steps and identify dependencies.',
+  pixel: 'You are PIXEL, a video editor. Help with editing briefs, pacing, captions, audio, shot lists, and visual polish.',
+  echo: 'You are ECHO, a social manager. Draft platform-aware captions, calls to action, publishing checklists, and schedules.',
+  byte: 'You are BYTE, a script and tools specialist. Help with scripts, workflow templates, code, and safe automation.',
+  scout: 'You are SCOUT, a trend researcher. Suggest research questions, content angles, and validation steps. Do not invent live trend data.'
+};
+app.post('/api/agents/run', async (req, res) => {
+  const b = req.body || {};
+  const agent = typeof b.agent === 'string' ? b.agent : 'orbit';
+  const prompt = typeof b.prompt === 'string' ? b.prompt.trim() : '';
+  if (!AGENT_GUIDES[agent]) return sendError(res, 400, 'Unknown agent.');
+  if (!isText(prompt, 4000)) return sendError(res, 400, 'prompt is required (max 4000 characters).');
+  const aiKey = process.env.AI_API_KEY || '';
+  if (!aiKey) return sendError(res, 503, 'AI provider is not configured on the server yet. Set AI_API_KEY in the backend host environment.');
+  const endpoint = process.env.AI_BASE_URL || 'https://api.openai.com/v1/chat/completions';
+  const model = process.env.AI_MODEL || 'gpt-4o-mini';
+  let endpointUrl;
+  try { endpointUrl = new URL(endpoint); } catch { return sendError(res, 500, 'AI_BASE_URL is invalid.'); }
+  if (endpointUrl.protocol !== 'https:' && endpointUrl.hostname !== 'localhost' && endpointUrl.hostname !== '127.0.0.1') {
+    return sendError(res, 500, 'AI_BASE_URL must use HTTPS.');
+  }
+  try {
+    const response = await fetch(endpointUrl, {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + aiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: 'system', content: AGENT_GUIDES[agent] + ' Be practical, concise, transparent about uncertainty, and return a useful draft or plan. You cannot publish content, access accounts, or execute external actions. Never claim that you did.' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 900
+      }),
+      signal: AbortSignal.timeout(30000)
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      console.error('AI provider returned HTTP ' + response.status);
+      return sendError(res, response.status === 429 ? 429 : 502, response.status === 429 ? 'AI provider rate limit reached. Try again later.' : 'AI provider request failed. Check the server-side AI configuration.');
+    }
+    const answer = payload?.choices?.[0]?.message?.content;
+    if (typeof answer !== 'string' || !answer.trim()) return sendError(res, 502, 'AI provider returned an empty response.');
+    res.json({ data: { agent, model, answer: answer.trim(), generatedAt: new Date().toISOString() } });
+  } catch (err) {
+    const timedOut = err?.name === 'TimeoutError' || err?.name === 'AbortError';
+    return sendError(res, timedOut ? 504 : 502, timedOut ? 'AI request timed out. Try again.' : 'Could not reach the AI provider.');
+  }
+});
+
 app.get('/api/tasks', async (req, res, next) => {
   try {
     const limit = Math.min(Math.max(Number(req.query.limit) || 100, 1), 250);
