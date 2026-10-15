@@ -119,3 +119,35 @@ $('workspaceName').value=safeLoad('bv.creator.name','BOTVERSE Creator Office');r
    });
  });
 })();
+
+
+// Cube-office interactions: select human teammates, inspect rooms, and jump to task management.
+(function initCubeOffice(){
+ const world=$('world'); if(!world)return;
+ const info={orbit:{emoji:'🧑🏻‍💼',name:'ORBIT',role:'Studio lead',detail:'Planning & workflow'},pixel:{emoji:'👩🏻‍🎨',name:'PIXEL',role:'Video editor',detail:'Editing, motion, captions and visual polish'},echo:{emoji:'👩🏽‍💻',name:'ECHO',role:'Social manager',detail:'Captions, publishing checklists and content schedule'},byte:{emoji:'👨🏻‍💻',name:'BYTE',role:'Script & tools',detail:'Scripts, automation and creator tools'},scout:{emoji:'🧑🏽‍🔬',name:'SCOUT',role:'Trend researcher',detail:'Researches ideas and content trends'}};
+ const card=$('cubeBotCard');
+ function selectBot(button){
+   const id=button.dataset.agent, bot=info[id]||info.orbit;
+   world.querySelectorAll('.bot-char').forEach(b=>{b.classList.toggle('selected',b===button);b.style.zIndex=b===button?'8':'7'});
+   $('cubeBotEmoji').textContent=bot.emoji;$('cubeBotName').textContent=bot.name;$('cubeBotRole').textContent=bot.role;$('cubeBotDetail').textContent=bot.detail;
+   card.hidden=false;
+   const old=selectedAgent;selectedAgent=id;
+   if(typeof renderTeam==='function') {try{renderTeam()}catch{}}
+ }
+ world.querySelectorAll('.bot-char').forEach(button=>button.addEventListener('click',()=>selectBot(button)));
+ world.querySelectorAll('.cube-room-tag').forEach(tag=>tag.addEventListener('click',()=>{
+   world.querySelectorAll('.cube-room-tag').forEach(t=>t.classList.toggle('active',t===tag));
+   const room=tag.dataset.room;
+   world.querySelectorAll('.hybrid-room').forEach(r=>r.style.filter='');
+   if(room==='creative'){world.querySelector('.creative-zone').style.filter='brightness(1.25)';toast('Creative Room selected')}
+   else if(room==='development'){world.querySelector('.dev-zone').style.filter='brightness(1.25)';toast('Development Room selected')}
+   else {toast('Meeting Room selected · planning space')}
+ }));
+ $('cubeTasksBtn')?.addEventListener('click',()=>{const b=document.querySelector('[data-page="pipeline"]');if(b)b.click()});
+ $('cubeAssignBtn')?.addEventListener('click',()=>{const b=$('newTaskBtn');if(b)b.click();setTimeout(()=>{if($('taskAgent'))$('taskAgent').value=selectedAgent},50)});
+ $('cubeBotClose')?.addEventListener('click',()=>{card.hidden=true});
+ const active=tasks.filter(t=>t.status!=='Published').length,done=tasks.filter(t=>t.status==='Published').length;
+ if($('cubeActiveTasks'))$('cubeActiveTasks').textContent=active;
+ if($('cubeCompletedTasks'))$('cubeCompletedTasks').textContent=done;
+ if($('cubeOnlineCount'))$('cubeOnlineCount').textContent=AGENTS.length+' ONLINE';
+})();
