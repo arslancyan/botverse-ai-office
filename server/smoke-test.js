@@ -39,6 +39,15 @@ try {
   const unauthorized = await request('/api/tasks', { auth: false });
   assert.equal(unauthorized.status, 401, 'API data routes must require a token');
 
+  const invalidAgent = await request('/api/agents/run', { method: 'POST', body: { agent: 'unknown', prompt: 'test' } });
+  assert.equal(invalidAgent.status, 400, 'unknown AI agent should be rejected before provider access');
+
+  const missingAiPrompt = await request('/api/agents/run', { method: 'POST', body: { agent: 'orbit', prompt: 'Make a short plan' } });
+  assert.ok([200, 503].includes(missingAiPrompt.status), 'agent route should return a response or a clear unconfigured-provider status');
+  if (missingAiPrompt.status === 503) {
+    assert.match((await missingAiPrompt.json()).error.message, /AI provider is not configured/i);
+  }
+
   const invalid = await request('/api/tasks', { method: 'POST', body: { title: '' } });
   assert.equal(invalid.status, 400, 'invalid task payload should be rejected');
 
