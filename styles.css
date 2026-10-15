@@ -204,3 +204,49 @@
 @media(min-width:1100px){#page-office .world{height:clamp(650px,57vw,820px)}}
 @media(max-width:900px){#page-office .panel:has(.world)>.panel-head{left:12px;right:12px;top:12px;max-width:360px;padding:10px 12px}#page-office .world{height:550px}#page-office .office-window>b{font-size:19px}}
 @media(max-width:650px){#page-office .scene-toolbar{align-items:flex-start}#page-office .scene-controls{width:100%}#page-office .scene-control{flex:1}#page-office .world{height:450px;min-width:0}#page-office .office-window>b{font-size:15px}#page-office .hybrid-room{top:36%;height:48%}#page-office .room-sign{font-size:8px;padding:8px}#page-office .room-sign small{font-size:6px}#page-office .human-avatar{width:42px;height:48px}#page-office .chibi{transform:scale(.82);transform-origin:bottom center}#page-office .human-bot .bot-role{display:none}#page-office .scene-hud>span{font-size:6px;padding:5px}#page-office .scene-hud>b{display:none}#page-office .hub-platform{width:19%;left:40.5%}#page-office .hub-orb{width:27px;height:27px;font-size:20px}}
+
+
+/* Stage 1 visual direction: compact 3D asset office-in-a-box diorama */
+#page-office .panel:has(.world)>.panel-head{position:static;max-width:none;margin:0;padding:16px 18px;border:0;border-bottom:1px solid #253e59;border-radius:0;background:linear-gradient(100deg,#0c1b30,#101d31);backdrop-filter:none}
+#page-office .panel:has(.world)>.panel-head h2{font-size:12px;letter-spacing:1.8px}
+#page-office .panel:has(.world)>.panel-head p{font-size:11px}
+#page-office .scene-toolbar{padding:10px 14px}
+#page-office .scene-toolbar-copy b{color:#a6eaff}
+#page-office .world-wrap{padding:20px;overflow:hidden;background:radial-gradient(ellipse at 50% 44%,#172d48 0,#0b1728 55%,#07111e 100%)}
+#page-office .world{height:clamp(390px,45vw,570px);min-width:0;overflow:hidden;border-radius:12px;border:1px solid #304a68;background:radial-gradient(ellipse at 50% 70%,#243b57 0,#111e31 60%,#0a1423 100%);box-shadow:inset 0 0 50px #020916aa,0 18px 36px #0007}
+#page-office .world:before{inset:0;background-image:radial-gradient(#7199bc 0.7px,transparent .7px);background-size:18px 18px;opacity:.16;mask-image:linear-gradient(transparent,#000)}
+#page-office .world:after{inset:12px;border:1px solid #75cfff16;box-shadow:inset 0 0 30px #4abfff08}
+#page-office .scene-hud{left:14px;right:14px;top:12px}
+#page-office .scene-hud>span,#page-office .scene-hud>b{font-size:7px;padding:5px 7px;background:#081526e8;border-color:#36536f}
+#page-office .office-floor{inset:18% 7% 7%;clip-path:none;overflow:visible;border:2px solid #5e7994;border-radius:3px;background:linear-gradient(145deg,#2c455d,#1b3048 50%,#14253a);box-shadow:0 10px 0 #0a1421,0 22px 25px #0008,inset 0 0 0 5px #9bb6c011;transform:perspective(1000px) rotateX(2deg)}
+#page-office .office-floor:before{inset:25% 0 0;background-image:linear-gradient(30deg,transparent 48.8%,#8ab6d32b 49.4%,#8ab6d32b 50%,transparent 50.6%),linear-gradient(150deg,transparent 48.8%,#8ab6d32b 49.4%,#8ab6d32b 50%,transparent 50.6%);background-size:50px 32px;opacity:.45}
+#page-office .office-floor:after{content:"";position:absolute;z-index:5;inset:0;border:5px solid #233a51;box-shadow:inset 0 0 0 2px #7595b055,0 0 0 1px #a6cce522;pointer-events:none}
+#page-office .office-window{top:0;left:0;right:0;height:25%;padding:10px 14px;background:linear-gradient(180deg,#0b1830,#152b4b 75%,#25435a);border-bottom:3px solid #57dfff;box-shadow:0 5px 12px #21baff20}
+#page-office .office-window>span{font-size:8px;letter-spacing:1.5px}
+#page-office .office-window>b{font-size:clamp(14px,1.7vw,22px);max-width:47%;letter-spacing:.8px}
+#page-office .office-window>small{font-size:7px;letter-spacing:1px}
+#page-office .city-lights{width:38%;height:85%;right:5%;opacity:.85}
+#page-office .hybrid-room{top:30%;height:55%;border-radius:4px;transform:skewY(-3deg);box-shadow:0 5px 0 #0b1725,0 10px 16px #0005,inset 0 0 15px #6fd6ff0c}
+#page-office .creative-zone{left:2%;width:44%;border-top:3px solid #ff7ecb;background:linear-gradient(145deg,#43344d,#1d2b40)}
+#page-office .dev-zone{right:2%;width:44%;border-top:3px solid #4fdbff;background:linear-gradient(145deg,#1e4056,#13243a)}
+#page-office .room-sign{font-size:clamp(7px,.8vw,10px);padding:8px 8px;letter-spacing:.4px}
+#page-office .room-sign small{font-size:6px;letter-spacing:.5px}
+#page-office .desk{height:28%;border-radius:3px;background:linear-gradient(145deg,#667f96,#30485f);box-shadow:0 4px 0 #091421,0 7px 10px #0005}
+#page-office .desk:after{bottom:-7px;height:7px}
+#page-office .chair{bottom:-15px;height:12px}
+#page-office .monitor{border-width:1px;border-radius:2px}
+#page-office .monitor i{font-size:5px}
+#page-office .hub-platform{left:43%;top:58%;width:14%;height:18%;border-radius:7px;box-shadow:0 0 0 3px #39bfff12,0 0 22px #36bfff3a,0 5px 0 #06101b}
+#page-office .hub-orb{width:28px;height:28px;font-size:19px;margin-bottom:2px}
+#page-office .hub-platform b{font-size:6px;letter-spacing:.4px}
+#page-office .hub-platform small{font-size:5px;margin-top:2px}
+#page-office .holo-ring{top:71%;width:21%;height:6%;border-width:2px;box-shadow:0 0 8px #58dcff,0 0 20px #58dcff55}
+#page-office .floor-stairs{bottom:0;height:9%;width:18%;left:41%}
+#page-office .floor-stairs span{height:3px}
+#page-office .human-avatar{width:42px;height:48px}
+#page-office .chibi{transform:scale(.86);transform-origin:bottom center}
+#page-office .human-bot .bot-label{font-size:8px;padding:3px 6px}
+#page-office .human-bot .bot-role{font-size:7px}
+#page-office .legend{padding:9px 14px}
+#page-office .scene-lights-off .office-floor{filter:brightness(.75)}
+@media(max-width:650px){#page-office .world-wrap{padding:8px}#page-office .world{height:390px}#page-office .office-floor{inset:22% 3% 8%}#page-office .hybrid-room{top:34%;height:50%}#page-office .room-sign{font-size:6px;padding:6px 5px}#page-office .room-sign small{font-size:5px}#page-office .human-avatar{width:33px;height:40px}#page-office .chibi{transform:scale(.7);transform-origin:bottom center}#page-office .hub-platform{width:16%;left:42%}#page-office .scene-hud{left:8px;right:8px;top:8px}#page-office .scene-hud>span{font-size:6px}#page-office .office-window>b{font-size:12px}}
