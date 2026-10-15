@@ -64,6 +64,7 @@ function agentWorkState(id){
 function renderAgentStates(){
  document.querySelectorAll('#teamList .team-row[data-agent-pick]').forEach(row=>{
   const state=agentWorkState(row.dataset.agentPick),badge=row.querySelector('.status');
+  row.dataset.workState=state.label.toLowerCase().replace(/\\s+/g,'-');
   if(badge)badge.textContent='● '+state.label;
   row.title=state.detail;
  });
