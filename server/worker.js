@@ -39,8 +39,23 @@ async function claimJob() {
       `UPDATE botverse_jobs SET status = 'running', attempts = attempts + 1, updated_at = NOW()
        WHERE id = $1 RETURNING *`, [row.id]
     );
+    let runId = null;
+    if (row.kind === 'agent_draft') {
+      const requestedAgent = typeof row.payload?.agent === 'string' && guides[row.payload.agent] ? row.payload.agent : 'orbit';
+      const run = await client.query(
+        `INSERT INTO botverse_agent_runs (workspace_id, agent_id, job_id, status, attempt, started_at)
+         VALUES ($1,$2,$3,'running',$4,NOW()) RETURNING id`,
+        [row.workspace_id, requestedAgent, row.id, claimed.rows[0].attempts]
+      );
+      runId = run.rows[0].id;
+      await client.query(
+        `INSERT INTO botverse_workflow_events (workspace_id, run_id, event_type, from_state, to_state, message)
+         VALUES ($1,$2,'agent_run.started','queued','running',$3)`,
+        [row.workspace_id, runId, 'Agent draft run started']
+      );
+    }
     await client.query('COMMIT');
-    return claimed.rows[0];
+    return { ...claimed.rows[0], run_id: runId };
   } catch (error) {
     await client.query('ROLLBACK');
     throw error;
@@ -91,6 +106,10 @@ async function processJob(job) {
      last_error = '', updated_at = NOW() WHERE id = $1`,
     [job.id, JSON.stringify({ result })]
   );
+  if (job.run_id) {
+    await pool.query("UPDATE botverse_agent_runs SET status = 'completed', artifact = $2::jsonb, finished_at = NOW(), updated_at = NOW() WHERE id = $1", [job.run_id, JSON.stringify({ agent: result.agent, model: result.model, answer: result.answer, generatedAt: result.generatedAt })]);
+    await pool.query("INSERT INTO botverse_workflow_events (workspace_id, run_id, event_type, from_state, to_state, message) VALUES ($1,$2,'agent_run.completed','running','completed','Agent draft completed')", [job.workspace_id, job.run_id]);
+  }
   await pool.query('INSERT INTO botverse_activity (workspace_id, message) VALUES ($1, $2)', [job.workspace_id, 'Completed ' + job.kind + ' job']);
 }
 
@@ -102,6 +121,10 @@ async function failJob(job, error) {
      WHERE id = $1`,
     [job.id, retry ? 'queued' : 'failed', message]
   );
+  if (job.run_id) {
+    await pool.query('UPDATE botverse_agent_runs SET status = $2, error_code = $3, finished_at = $4, updated_at = NOW() WHERE id = $1', [job.run_id, retry ? 'cancelled' : 'failed', 'worker_error', retry ? null : new Date()]);
+    await pool.query('INSERT INTO botverse_workflow_events (workspace_id, run_id, event_type, from_state, to_state, message) VALUES ($1,$2,$3,\'running\',$4,$5)', [job.workspace_id, job.run_id, retry ? 'agent_run.retrying' : 'agent_run.failed', retry ? 'queued' : 'failed', message.slice(0, 400)]);
+  }
   await pool.query('INSERT INTO botverse_activity (workspace_id, message) VALUES ($1, $2)', [job.workspace_id, 'Job ' + job.kind + ' ' + (retry ? 'will retry' : 'failed') + ': ' + message.slice(0, 180)]);
   console.error('BOTVERSE job ' + job.id + ' failed: ' + message);
 }
