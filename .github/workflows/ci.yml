@@ -7,8 +7,26 @@ on:
     branches: [main]
 
 jobs:
-  syntax-check:
+  api-integration:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: botverse_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d botverse_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/botverse_test
+      BOTVERSE_API_TOKEN: botverse-ci-test-token-0123456789abcdef
+      TEST_PORT: 3187
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -16,5 +34,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Install dependencies
+        run: npm install
       - name: Check frontend and API syntax
         run: npm run check
+      - name: Apply database migrations
+        run: npm run migrate
+      - name: Run API integration smoke tests
+        run: npm run test:api
