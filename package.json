@@ -4,10 +4,12 @@
   "private": true,
   "description": "Secure API foundation for BOTVERSE Creator OS",
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "node server/index.js",
-    "check": "node --check server/index.js"
+    "check": "node --check server/index.js && node --check app.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
