@@ -66,12 +66,13 @@ Task JSON example:
 Requirements: Node.js 20+ and PostgreSQL.
 
 1. Create a PostgreSQL database.
-2. Run `db/schema.sql` against that database.
-3. Copy `.env.example` to `.env` and set:
+2. Copy `.env.example` to `.env` and set `DATABASE_URL` first.
+3. Run `npm run migrate` to apply the versioned, transactional initial migration. It records completion in `botverse_schema_migrations` and safely skips version 1 on repeat runs. The legacy `db/schema.sql` remains available as a manual bootstrap option.
+4. Set the remaining variables in `.env`:
    - `DATABASE_URL`
    - `BOTVERSE_API_TOKEN` (use a long random secret of at least 32 characters)
    - `CORS_ORIGINS` (comma-separated exact origins that may call the API)
-4. Install and run:
+5. Install and run:
 
 ```bash
 npm install
@@ -79,7 +80,7 @@ npm run check
 npm start
 ```
 
-5. Open `http://localhost:3000/api/health`.
+6. Open `http://localhost:3000/api/health`.
 
 Never commit `.env`, database passwords, API tokens, or model-provider keys. Do not put privileged secrets in frontend JavaScript.
 
@@ -91,7 +92,7 @@ GitHub Pages only serves the static frontend; it cannot run this Node API. The A
 
 ## Important current limitations
 
-- The frontend still uses browser storage by default; it has **not yet been switched to this API**.
+- The frontend remains local-first. Settings now supports a session-only API token, API health/auth test, and an explicit confirmed read/import of server tasks, projects, and activity. Normal create/edit/delete actions still use local storage; write-through sync awaits proper user authentication and workspace authorization.
 - The five robot characters are role definitions, not autonomous LLM agents yet.
 - Social accounts are not connected; no real posts are published.
 - Analytics currently reflect local task records, not live platform performance.
@@ -100,7 +101,7 @@ GitHub Pages only serves the static frontend; it cannot run this Node API. The A
 ## Roadmap
 
 1. Deploy and smoke-test the API and database.
-2. Add an explicit frontend connection setup and sync mode.
+2. Finish API write-through after adding real user authentication and workspace authorization.
 3. Implement secure user authentication and workspace membership.
 4. Connect a model provider through the backend with bounded tools and human approval.
 5. Add media library, job queue, and retryable scheduled publishing.
