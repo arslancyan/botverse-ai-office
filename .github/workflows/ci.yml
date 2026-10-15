@@ -27,6 +27,7 @@ jobs:
       DATABASE_URL: postgres://postgres:postgres@localhost:5432/botverse_test
       BOTVERSE_API_TOKEN: botverse-ci-test-token-0123456789abcdef
       TEST_PORT: 3187
+      AI_API_KEY: ""
     steps:
       - name: Checkout
         uses: actions/checkout@v4
