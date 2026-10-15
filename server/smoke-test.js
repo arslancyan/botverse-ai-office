@@ -48,6 +48,13 @@ try {
     assert.match((await missingAiPrompt.json()).error.message, /AI provider is not configured/i);
   }
 
+  const integrations = await request('/api/integrations/status');
+  assert.equal(integrations.status, 200, 'integration readiness endpoint should be available');
+  const integrationData = (await integrations.json()).data;
+  assert.equal(integrationData.livePublishingEnabled, false, 'live social publishing must remain disabled');
+  assert.equal(integrationData.platforms.length, 4, 'four social platform statuses should be returned');
+  assert.ok(integrationData.platforms.every((item) => item.connected === false && item.publishEnabled === false), 'platforms must not be reported connected before OAuth is implemented');
+
   const invalid = await request('/api/tasks', { method: 'POST', body: { title: '' } });
   assert.equal(invalid.status, 400, 'invalid task payload should be rejected');
 
