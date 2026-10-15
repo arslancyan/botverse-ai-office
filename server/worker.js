@@ -122,7 +122,7 @@ async function failJob(job, error) {
     [job.id, retry ? 'queued' : 'failed', message]
   );
   if (job.run_id) {
-    await pool.query('UPDATE botverse_agent_runs SET status = $2, error_code = $3, finished_at = $4, updated_at = NOW() WHERE id = $1', [job.run_id, retry ? 'cancelled' : 'failed', 'worker_error', retry ? null : new Date()]);
+    await pool.query('UPDATE botverse_agent_runs SET status = $2, error_code = $3, finished_at = $4, updated_at = NOW() WHERE id = $1', [job.run_id, retry ? 'queued' : 'failed', 'worker_error', retry ? null : new Date()]);
     await pool.query('INSERT INTO botverse_workflow_events (workspace_id, run_id, event_type, from_state, to_state, message) VALUES ($1,$2,$3,\'running\',$4,$5)', [job.workspace_id, job.run_id, retry ? 'agent_run.retrying' : 'agent_run.failed', retry ? 'queued' : 'failed', message.slice(0, 400)]);
   }
   await pool.query('INSERT INTO botverse_activity (workspace_id, message) VALUES ($1, $2)', [job.workspace_id, 'Job ' + job.kind + ' ' + (retry ? 'will retry' : 'failed') + ': ' + message.slice(0, 180)]);
