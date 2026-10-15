@@ -266,6 +266,7 @@ app.post('/api/jobs', async (req, res, next) => {
   try {
     const b = req.body || {};
     if (!['agent_draft', 'publish'].includes(b.kind)) return sendError(res, 400, 'kind must be agent_draft or publish.');
+    if (b.kind === 'publish') return sendError(res, 403, 'Publishing is disabled until official OAuth, permissions, and human approval are implemented.');
     if (!b.payload || typeof b.payload !== 'object' || Array.isArray(b.payload)) return sendError(res, 400, 'payload must be a JSON object.');
     if (JSON.stringify(b.payload).length > 10000) return sendError(res, 400, 'payload must be at most 10000 characters.');
     if (b.scheduledAt !== undefined && b.scheduledAt !== null && b.scheduledAt !== '' && (typeof b.scheduledAt !== 'string' || Number.isNaN(Date.parse(b.scheduledAt)))) return sendError(res, 400, 'scheduledAt must be a valid ISO date/time.');
