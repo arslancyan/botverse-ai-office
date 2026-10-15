@@ -47,7 +47,36 @@ function renderProjects(){renderOfficePreviews();$('projectCards').innerHTML=pro
 function renderCalendar(){const y=calendarDate.getFullYear(),m=calendarDate.getMonth();$('calendarTitle').textContent=calendarDate.toLocaleDateString(undefined,{month:'long',year:'numeric'});const first=new Date(y,m,1),start=(first.getDay()+6)%7,days=new Date(y,m+1,0).getDate(),prevDays=new Date(y,m,0).getDate();let html=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>'<div class="calendar-dayname">'+d+'</div>').join('');for(let i=0;i<42;i++){let day=i-start+1,date,inside=true;if(day<1){date=new Date(y,m-1,prevDays+day);inside=false}else if(day>days){date=new Date(y,m+1,day-days);inside=false}else date=new Date(y,m,day);const iso=date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');const today=iso===dayOffset(0);const dayTasks=tasks.filter(t=>t.due===iso);html+='<button class="calendar-cell '+(!inside?'outside ':'')+(today?'today':'')+'" data-calendar-date="'+iso+'"><span class="daynum">'+date.getDate()+'</span>'+dayTasks.slice(0,2).map(t=>'<span class="calendar-chip '+(t.status==='Published'?'published':t.status==='Scheduled'?'scheduled':'')+'">'+esc(t.channel)+': '+esc(t.title)+'</span>').join('')+(dayTasks.length>2?'<span class="muted" style="font-size:9px">+'+(dayTasks.length-2)+' more</span>':'')+'</button>'} $('calendarGrid').innerHTML=html}
 function renderLogs(){$('activityList').innerHTML=logs.map(l=>'<article class="task"><span style="color:var(--blue)">✦</span><div><b>'+esc(l.text)+'</b><small>'+age(l.time)+'</small></div></article>').join('')||'<div class="empty">No activity recorded.</div>'}
 function renderAnalytics(){const published=tasks.filter(t=>t.status==='Published').length,open=tasks.filter(t=>t.status!=='Published').length,ready=tasks.filter(t=>['Ready','Scheduled'].includes(t.status)).length;$('analyticsStats').innerHTML=[['Total content',tasks.length,'Across all channels'],['Published',published,'Marked as published'],['In production',open,'Still in workflow'],['Ready to post',ready,'Ready or scheduled']].map(x=>'<div class="stat"><div class="stat-label">'+x[0]+'</div><div class="stat-num">'+x[1]+'</div><div class="stat-note">'+x[2]+'</div></div>').join('');$('analyticsStats2').innerHTML=$('analyticsStats').innerHTML;$('channelBars').innerHTML=CHANNELS.map(ch=>{const n=tasks.filter(t=>t.channel===ch).length,p=tasks.length?Math.round(n/tasks.length*100):0;return '<div class="barrow"><span>'+ch+'</span><div class="bartrack"><div class="barfill" style="width:'+p+'%"></div></div><b>'+n+'</b></div>'}).join('');$('channelBars2').innerHTML=$('channelBars').innerHTML;const weekly=[6,8,5,10,7,12,Math.max(2,tasks.length)];$('weeklyChart').innerHTML=weekly.map((n,i)=>'<div class="chart-col"><div class="chart-bar" style="height:'+Math.min(100,n*7)+'%"></div><small>'+['M','T','W','T','F','S','S'][i]+'</small></div>').join('');$('weeklyChart2').innerHTML=$('weeklyChart').innerHTML;$('dashboardTasks').innerHTML=tasks.slice(0,5).map(taskHtml).join('')||'<div class="empty">No content yet.</div>'}
-function render(){renderTasks();renderAgents();renderProjects();renderCalendar();renderLogs();renderAnalytics();selectAgent(selectedAgent)}
+function agentWorkState(id){
+ const assigned=tasks.filter(t=>t.agent===id);
+ if(!assigned.length)return {label:'Idle',detail:'No tasks assigned'};
+ const active=assigned.find(t=>['Scripting','Editing'].includes(t.status));
+ if(active)return {label:'Working',detail:active.title};
+ const review=assigned.find(t=>t.status==='Ready');
+ if(review)return {label:'Needs review',detail:review.title};
+ const scheduled=assigned.find(t=>t.status==='Scheduled');
+ if(scheduled)return {label:'Scheduled',detail:scheduled.title};
+ const open=assigned.find(t=>t.status==='Idea');
+ if(open)return {label:'Assigned',detail:open.title};
+ if(assigned.every(t=>t.status==='Published'))return {label:'Completed',detail:'All assigned tasks are published'};
+ return {label:'Idle',detail:'Waiting for next task'};
+}
+function renderAgentStates(){
+ document.querySelectorAll('#teamList .team-row[data-agent-pick]').forEach(row=>{
+  const state=agentWorkState(row.dataset.agentPick),badge=row.querySelector('.status');
+  if(badge)badge.textContent='● '+state.label;
+  row.title=state.detail;
+ });
+ document.querySelectorAll('.bot-char[data-agent]').forEach(bot=>{
+  const state=agentWorkState(bot.dataset.agent);
+  bot.dataset.workState=state.label.toLowerCase().replace(/\\s+/g,'-');
+  bot.title=agent(bot.dataset.agent).name+' — '+state.label+': '+state.detail;
+ });
+ const selected=agentWorkState(selectedAgent);
+ const profile=document.querySelector('#page-agents .agent-card[data-agent-pick="'+selectedAgent+'"]');
+ if(profile)profile.dataset.workState=selected.label.toLowerCase().replace(/\\s+/g,'-');
+}
+function render(){renderTasks();renderAgents();renderAgentStates();renderProjects();renderCalendar();renderLogs();renderAnalytics();selectAgent(selectedAgent)}
 const PAGE_INFO={office:['Creator Office ✨','One little AI crew. All your content channels.'],dashboard:['Creator Dashboard','Your content operation at a glance.'],calendar:['Content Calendar','Plan publishing dates and see what is coming up.'],pipeline:['Production Pipeline','Move every idea from scripting to published.'],projects:['Projects & Campaigns','Group content work into campaigns and recurring series.'],agents:['AI Team','Five friendly specialist bots for your creator company.'],analytics:['Content Analytics','A local overview of your content plan, not live platform metrics.'],activity:['Activity Log','Recent changes saved in this browser.'],settings:['Workspace Settings','Manage your local workspace and export your data.']};
 function goPage(page){document.querySelectorAll('.page').forEach(el=>el.classList.toggle('active',el.id==='page-'+page));document.querySelectorAll('.nav [data-page]').forEach(el=>el.classList.toggle('active',el.dataset.page===page));$('pageTitle').textContent=PAGE_INFO[page][0];$('pageSubtitle').textContent=PAGE_INFO[page][1];$('sidebar').classList.remove('open');window.scrollTo({top:0,behavior:'smooth'})}
 function openTask(prefill='',assignee=selectedAgent){editingTaskId=null;$('taskFormTitle').textContent='Create content task';$('taskSubmit').textContent='Add to pipeline';$('taskTitle').value=prefill;$('taskAgent').value=assignee;$('taskChannel').value='TikTok';$('taskStatus').value='Idea';$('taskPriority').value='Medium';$('taskDue').value=dayOffset(1);$('taskNotes').value='';$('taskProject').innerHTML='<option value="">No project</option>'+projects.map(p=>'<option value="'+p.id+'">'+esc(p.name)+'</option>').join('');$('taskModal').classList.add('open');setTimeout(()=>$('taskTitle').focus(),40)}
