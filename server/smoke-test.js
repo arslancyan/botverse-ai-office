@@ -92,6 +92,8 @@ try {
   const workflowEvents = (await eventsResponse.json()).data;
   assert.ok(workflowEvents.some((event) => event.taskId === task.id && event.from === 'Idea' && event.to === 'Editing'), 'status transitions should be auditable');
   assert.ok(workflowEvents.some((event) => event.taskId === task.id && event.to === 'Blocked'), 'blocked transitions should be recorded');
+  const isolatedEvents = await request('/api/workflow/events', { workspace: 'ci-other-workspace' });
+  assert.equal((await isolatedEvents.json()).data.some((event) => event.taskId === task.id), false, 'workflow history must be workspace-scoped');
 
   const deleteTask = await request('/api/tasks/' + task.id, { method: 'DELETE' });
   assert.equal(deleteTask.status, 204, 'task should be deletable');
