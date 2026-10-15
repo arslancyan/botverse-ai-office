@@ -92,7 +92,51 @@ async function runAiAgent(){
   toast('Agent request did not complete');
  }finally{button.disabled=false}
 }
+
 $('runAiAgent')?.addEventListener('click',runAiAgent);
+
+async function refreshJobs(){
+ const status=$('queueStatus'),list=$('jobList');status.textContent='Loading queue…';list.textContent='';
+ try{
+  readApiForm();
+  const response=await apiRequest('/api/jobs?limit=100');
+  const jobs=response.data||[];
+  status.textContent=jobs.length+' jobs';
+  list.innerHTML=jobs.map(job=>'<article class="task"><div><b>'+esc(job.kind)+' · '+esc(job.status)+'</b><small>'+esc(job.created?new Date(job.created).toLocaleString():'Recently created')+(job.lastError?' · '+esc(job.lastError):'')+'</small></div><div class="task-actions">'+(job.status==='queued'||job.status==='failed'?'<button class="btn" data-job-cancel="'+esc(job.id)+'">Cancel</button>':'')+'</div></article>').join('')||'<div class="empty">Queue is empty.</div>';
+ }catch(err){status.textContent='Queue unavailable';list.textContent=err.message||'Could not load jobs.'}
+}
+async function enqueueDraft(){
+ const status=$('queueStatus'),prompt=$('queuePrompt').value.trim(),agentId=$('aiAgentSelect').value;
+ if(!prompt){toast('Enter a prompt for the queued draft');return}
+ status.textContent='Queueing…';
+ try{
+  readApiForm();
+  const response=await apiRequest('/api/jobs',{method:'POST',body:JSON.stringify({kind:'agent_draft',payload:{agent:agentId,prompt}})});
+  $('queuePrompt').value='';
+  status.textContent='Queued · '+response.data.id;
+  toast('Agent draft added to queue');
+  await refreshJobs();
+ }catch(err){status.textContent='Could not queue';toast(err.message||'Queue request failed')}
+}
+async function checkIntegrations(){
+ const status=$('integrationStatus'),list=$('integrationList');status.textContent='Checking…';list.textContent='';
+ try{
+  readApiForm();
+  const response=await apiRequest('/api/integrations/status');
+  const platforms=response.data.platforms||[];
+  list.innerHTML=platforms.map(p=>'<article class="task"><div><b>'+esc(p.name)+' · '+(p.configured?'App metadata configured':'Not configured')+'</b><small>'+esc(p.note)+'</small></div><span class="task-status pending">Not connected</span></article>').join('');
+  status.textContent='Live publishing disabled';
+ }catch(err){status.textContent='Check failed';list.textContent=err.message||'Could not check integration status.'}
+}
+$('refreshJobs')?.addEventListener('click',refreshJobs);
+$('enqueueDraft')?.addEventListener('click',enqueueDraft);
+$('checkIntegrations')?.addEventListener('click',checkIntegrations);
+$('jobList')?.addEventListener('click',async e=>{
+ const button=e.target.closest('[data-job-cancel]');if(!button)return;
+ try{readApiForm();await apiRequest('/api/jobs/'+encodeURIComponent(button.dataset.jobCancel),{method:'PATCH',body:JSON.stringify({status:'cancelled'})});toast('Job cancelled');await refreshJobs()}
+ catch(err){toast(err.message||'Could not cancel job')}
+});
+
 
 $('workspaceName').value=safeLoad('bv.creator.name','BOTVERSE Creator Office');render();
 
