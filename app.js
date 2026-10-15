@@ -75,3 +75,47 @@ async function testApiConnection(){const status=$('apiStatus');status.textConten
 async function loadApiWorkspace(){const status=$('apiStatus');status.textContent='Loading…';try{readApiForm();const [taskResult,projectResult,activityResult]=await Promise.all([apiRequest('/api/tasks?limit=250'),apiRequest('/api/projects'),apiRequest('/api/activity')]);if(!confirm('Replace local task and project lists with '+taskResult.data.length+' server tasks and '+projectResult.data.length+' server projects? Existing local data remains in this browser backup only.')){status.textContent='Cancelled';return}tasks=taskResult.data.map(t=>({...t,created:t.created?new Date(t.created).getTime():Date.now(),projectId:t.projectId||null}));projects=projectResult.data.map(p=>({...p,created:p.created?new Date(p.created).getTime():Date.now()}));logs=activityResult.data.map(l=>({...l,time:new Date(l.time).getTime()}));save();render();status.textContent='Loaded · '+tasks.length+' tasks / '+projects.length+' projects';toast('Loaded workspace data from API')}catch(err){status.textContent='Load failed';toast(err.message||'Could not load API data')}}
 $('testApi').addEventListener('click',testApiConnection);$('loadApiData').addEventListener('click',loadApiWorkspace);
 $('workspaceName').value=safeLoad('bv.creator.name','BOTVERSE Creator Office');render();
+
+
+// Interactive office scene controls — presentation-only, no external services required.
+(function initOfficeScene(){
+ const world=document.getElementById('world');
+ const view=document.getElementById('sceneViewBtn');
+ const lights=document.getElementById('sceneLightBtn');
+ const motion=document.getElementById('sceneMotionBtn');
+ const zoom=document.getElementById('sceneZoomBtn');
+ if(!world||!view||!lights||!motion||!zoom)return;
+ view.addEventListener('click',()=>{
+   const top=world.classList.toggle('scene-top-view');
+   view.classList.toggle('active',!top);
+   view.textContent=top?'▦ Top view':'◈ Isometric';
+   world.style.transform=top?'perspective(1100px) rotateX(0deg) scale(1.02)':'';
+   toast(top?'Top view enabled':'Isometric view enabled');
+ });
+ lights.addEventListener('click',()=>{
+   const off=world.classList.toggle('scene-lights-off');
+   lights.classList.toggle('active',!off);
+   lights.textContent=off?'☾ Ambient':'☼ Lights';
+   toast(off?'Ambient lighting':'Neon lights enabled');
+ });
+ motion.addEventListener('click',()=>{
+   const off=world.classList.toggle('scene-motion-off');
+   motion.classList.toggle('active',!off);
+   motion.textContent=off?'▷ Motion paused':'▶ Idle motion';
+   toast(off?'Office animation paused':'Office animation running');
+ });
+ zoom.addEventListener('click',()=>{
+   const enlarged=world.classList.toggle('scene-zoomed');
+   zoom.classList.toggle('active',enlarged);
+   zoom.textContent=enlarged?'− Zoom out':'＋ Zoom';
+ });
+ world.querySelectorAll('.bot-char').forEach((button,index)=>{
+   button.addEventListener('click',()=>{
+     world.querySelectorAll('.bot-char').forEach(b=>b.classList.remove('selected'));
+     button.classList.add('selected');
+     button.style.zIndex='8';
+     world.querySelectorAll('.bot-char').forEach(b=>{if(b!==button)b.style.zIndex='7'});
+     world.style.setProperty('--selected-bot',button.style.getPropertyValue('--bot'));
+   });
+ });
+})();
