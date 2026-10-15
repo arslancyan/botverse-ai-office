@@ -153,6 +153,15 @@ async function refreshJobs(){
   list.innerHTML=jobs.map(job=>'<article class="task"><div><b>'+esc(job.kind)+' · '+esc(job.status)+'</b><small>'+esc(job.created?new Date(job.created).toLocaleString():'Recently created')+(job.lastError?' · '+esc(job.lastError):'')+'</small></div><div class="task-actions">'+(job.status==='queued'||job.status==='failed'?'<button class="btn" data-job-cancel="'+esc(job.id)+'">Cancel</button>':'')+'</div></article>').join('')||'<div class="empty">Queue is empty.</div>';
  }catch(err){status.textContent='Queue unavailable';list.textContent=err.message||'Could not load jobs.'}
 }
+async function refreshAgentRuns(){
+ const list=$('agentRunList');if(!list)return;list.textContent='Loading runs…';
+ try{
+  readApiForm();
+  const response=await apiRequest('/api/agent-runs?limit=50');
+  const runs=response.data||[];
+  list.innerHTML=runs.map(run=>'<article class="task"><div><b>'+esc(agent(run.agent).name)+' · '+esc(run.status)+'</b><small>Attempt '+esc(run.attempt)+' · '+esc(run.startedAt?new Date(run.startedAt).toLocaleString():'Not started')+(run.errorCode?' · '+esc(run.errorCode):'')+'</small>'+(run.artifact?.answer?'<p class="run-artifact">'+esc(run.artifact.answer)+'</p>':'')+'</div><span class="task-status '+(run.status==='completed'?'completed':run.status==='failed'?'failed':'running')+'">'+esc(run.status)+'</span></article>').join('')||'<div class="empty">No agent runs recorded yet. Queue a draft and start the worker to create one.</div>';
+ }catch(err){list.textContent=err.message||'Could not load agent runs.'}
+}
 async function enqueueDraft(){
  const status=$('queueStatus'),prompt=$('queuePrompt').value.trim(),agentId=$('aiAgentSelect').value;
  if(!prompt){toast('Enter a prompt for the queued draft');return}
@@ -176,7 +185,7 @@ async function checkIntegrations(){
   status.textContent='Live publishing disabled';
  }catch(err){status.textContent='Check failed';list.textContent=err.message||'Could not check integration status.'}
 }
-$('refreshJobs')?.addEventListener('click',refreshJobs);
+$('refreshJobs')?.addEventListener('click',refreshJobs);\n$('refreshAgentRuns')?.addEventListener('click',refreshAgentRuns);
 $('enqueueDraft')?.addEventListener('click',enqueueDraft);
 $('checkIntegrations')?.addEventListener('click',checkIntegrations);
 $('jobList')?.addEventListener('click',async e=>{
