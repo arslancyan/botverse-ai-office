@@ -185,7 +185,8 @@ async function checkIntegrations(){
   status.textContent='Live publishing disabled';
  }catch(err){status.textContent='Check failed';list.textContent=err.message||'Could not check integration status.'}
 }
-$('refreshJobs')?.addEventListener('click',refreshJobs);\n$('refreshAgentRuns')?.addEventListener('click',refreshAgentRuns);
+$('refreshJobs')?.addEventListener('click',refreshJobs);
+$('refreshAgentRuns')?.addEventListener('click',refreshAgentRuns);
 $('enqueueDraft')?.addEventListener('click',enqueueDraft);
 $('checkIntegrations')?.addEventListener('click',checkIntegrations);
 $('jobList')?.addEventListener('click',async e=>{
