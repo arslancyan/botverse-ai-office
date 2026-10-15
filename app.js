@@ -81,9 +81,11 @@ function renderAgentStates(){
   bot.dataset.workState=state.label.toLowerCase().replace(/\s+/g,'-');
   bot.title=agent(bot.dataset.agent).name+' — '+state.label+': '+state.detail;
  });
- const selected=agentWorkState(selectedAgent);
- const profile=document.querySelector('#page-agents .agent-card[data-agent-pick="'+selectedAgent+'"]');
- if(profile)profile.dataset.workState=selected.label.toLowerCase().replace(/\s+/g,'-');
+ document.querySelectorAll('#page-agents .agent-card[data-agent-pick]').forEach(card=>{
+  const state=agentWorkState(card.dataset.agentPick);
+  card.dataset.workState=state.label.toLowerCase().replace(/\s+/g,'-');
+  card.title=state.label+' — '+state.detail;
+ });
 }
 function render(){renderTasks();renderAgents();renderAgentStates();renderProjects();renderCalendar();renderLogs();renderAnalytics();selectAgent(selectedAgent);renderAgentStates();refreshWorkflowStats()}
 const PAGE_INFO={office:['Creator Office ✨','One little AI crew. All your content channels.'],dashboard:['Creator Dashboard','Your content operation at a glance.'],calendar:['Content Calendar','Plan publishing dates and see what is coming up.'],pipeline:['Production Pipeline','Move every idea from scripting to published.'],projects:['Projects & Campaigns','Group content work into campaigns and recurring series.'],agents:['AI Team','Five friendly specialist bots for your creator company.'],analytics:['Content Analytics','A local overview of your content plan, not live platform metrics.'],activity:['Activity Log','Recent changes saved in this browser.'],settings:['Workspace Settings','Manage your local workspace and export your data.']};
