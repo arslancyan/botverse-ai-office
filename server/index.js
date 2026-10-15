@@ -61,7 +61,7 @@ function requireAuth(req, res, next) {
   return next();
 }
 const AGENTS = new Set(['orbit', 'pixel', 'echo', 'byte', 'scout']);
-const STATUSES = new Set(['Idea', 'Scripting', 'Editing', 'Ready', 'Scheduled', 'Published']);
+const STATUSES = new Set(['Idea', 'Scripting', 'Editing', 'Blocked', 'Ready', 'Scheduled', 'Published']);
 const PRIORITIES = new Set(['Low', 'Medium', 'High']);
 const CHANNELS = new Set(['TikTok', 'YouTube', 'Facebook', 'Instagram', 'Editing', 'Research', 'General', 'Cross-platform']);
 const PROJECT_STATUSES = new Set(['Planning', 'Active', 'Paused', 'Completed']);
