@@ -74,6 +74,26 @@ function readApiForm(){const raw=$('apiBaseUrl').value.trim();const base=raw.end
 async function testApiConnection(){const status=$('apiStatus');status.textContent='Testing…';try{readApiForm();const r=await fetch(apiSession.baseUrl+'/api/health',{headers:{'Accept':'application/json'}});const data=await r.json();if(!r.ok||!data.ok)throw new Error(data?.error?.message||'API health check failed');await apiRequest('/api/tasks?limit=1');status.textContent='Connected · '+data.service;toast('API connection successful')}catch(err){status.textContent='Connection failed';toast(err.message||'Could not connect to API')}}
 async function loadApiWorkspace(){const status=$('apiStatus');status.textContent='Loading…';try{readApiForm();const [taskResult,projectResult,activityResult]=await Promise.all([apiRequest('/api/tasks?limit=250'),apiRequest('/api/projects'),apiRequest('/api/activity')]);if(!confirm('Replace local task and project lists with '+taskResult.data.length+' server tasks and '+projectResult.data.length+' server projects? Existing local data remains in this browser backup only.')){status.textContent='Cancelled';return}tasks=taskResult.data.map(t=>({...t,created:t.created?new Date(t.created).getTime():Date.now(),projectId:t.projectId||null}));projects=projectResult.data.map(p=>({...p,created:p.created?new Date(p.created).getTime():Date.now()}));logs=activityResult.data.map(l=>({...l,time:new Date(l.time).getTime()}));save();render();status.textContent='Loaded · '+tasks.length+' tasks / '+projects.length+' projects';toast('Loaded workspace data from API')}catch(err){status.textContent='Load failed';toast(err.message||'Could not load API data')}}
 $('testApi').addEventListener('click',testApiConnection);$('loadApiData').addEventListener('click',loadApiWorkspace);
+async function runAiAgent(){
+ const button=$('runAiAgent'),status=$('aiAgentStatus'),result=$('aiAgentResult');
+ const prompt=$('aiAgentPrompt').value.trim(),agentId=$('aiAgentSelect').value;
+ if(!prompt){$('aiAgentPrompt').focus();toast('Write a task for the agent first');return}
+ status.textContent='Running agent…';button.disabled=true;result.hidden=true;result.textContent='';
+ try{
+  readApiForm();
+  const response=await apiRequest('/api/agents/run',{method:'POST',body:JSON.stringify({agent:agentId,prompt})});
+  result.textContent=response.data.answer;result.hidden=false;
+  status.textContent=response.data.model+' · generated '+new Date(response.data.generatedAt).toLocaleTimeString();
+  toast('Agent response ready');
+ }catch(err){
+  status.textContent='Agent unavailable';
+  result.textContent=err.message||'Could not run the agent.';
+  result.hidden=false;
+  toast('Agent request did not complete');
+ }finally{button.disabled=false}
+}
+$('runAiAgent')?.addEventListener('click',runAiAgent);
+
 $('workspaceName').value=safeLoad('bv.creator.name','BOTVERSE Creator Office');render();
 
 
