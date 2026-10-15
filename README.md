@@ -1,11 +1,11 @@
 # BOTVERSE — Creator OS
 
-BOTVERSE is a creator-company workspace for TikTok, YouTube, Facebook, and Instagram workflows, with a cozy virtual office and five specialist robot teammates.
+BOTVERSE is a creator-company workspace for TikTok, YouTube, Facebook, and Instagram workflows, with a compact futuristic office diorama and five specialist human/chibi teammate concepts.
 
 ## Current product
 
 ### Frontend
-- CSS-rendered pseudo-3D Creator Office with animated robot mascots: ORBIT, PIXEL, ECHO, BYTE, and SCOUT.
+- CSS-rendered isometric cube office with chibi human avatars, selectable room labels, status cards, and office-view controls. Specialist roles: ORBIT, PIXEL, ECHO, BYTE, and SCOUT.
 - Content Calendar, Production Board, Projects & Campaigns, AI Team, Analytics, Activity Log, and workspace backup.
 - Responsive layout for desktop, tablet, and mobile.
 - Browser-local prototype data until the frontend is configured to use the API.
@@ -14,7 +14,8 @@ BOTVERSE is a creator-company workspace for TikTok, YouTube, Facebook, and Insta
 - Node.js + Express REST API.
 - PostgreSQL persistence using parameterized SQL queries.
 - Bearer-token authentication, request-size limit, rate limit, Helmet security headers, and CORS allowlist.
-- Workspace-scoped tasks, projects, and activity records.
+- Workspace-scoped tasks, projects, activity records, and a durable job queue for future agent drafts / publishing jobs.
+- Optional server-side AI Agent Lab endpoint. Provider API keys remain server-side; AI calls return drafts and plans only.
 - Input validation and consistent JSON errors.
 
 ## API endpoints
@@ -39,6 +40,11 @@ Optional workspace header:
 | PATCH | `/api/projects/:id` | Update project fields |
 | DELETE | `/api/projects/:id` | Delete a project |
 | GET | `/api/activity` | Read latest 100 activity entries |
+| POST | `/api/agents/run` | Run a specialist AI draft/plan (requires `AI_API_KEY`) |
+| GET | `/api/jobs` | List queued jobs for a workspace |
+| POST | `/api/jobs` | Queue an agent-draft or publish job payload |
+| PATCH | `/api/jobs/:id` | Queue or cancel eligible jobs |
+| DELETE | `/api/jobs/:id` | Delete queued/cancelled/failed jobs |
 
 ### Example request
 
@@ -67,11 +73,12 @@ Requirements: Node.js 20+ and PostgreSQL.
 
 1. Create a PostgreSQL database.
 2. Copy `.env.example` to `.env` and set `DATABASE_URL` first.
-3. Run `npm run migrate` to apply the versioned, transactional initial migration. It records completion in `botverse_schema_migrations` and safely skips version 1 on repeat runs. The legacy `db/schema.sql` remains available as a manual bootstrap option.
+3. Run `npm run migrate` to apply all pending numbered migrations transactionally. Applied versions are recorded in `botverse_schema_migrations`; repeat runs skip versions already applied. The legacy `db/schema.sql` remains available as a manual bootstrap option.
 4. Set the remaining variables in `.env`:
    - `DATABASE_URL`
    - `BOTVERSE_API_TOKEN` (use a long random secret of at least 32 characters)
    - `CORS_ORIGINS` (comma-separated exact origins that may call the API)
+   - Optional `AI_API_KEY`, `AI_BASE_URL`, and `AI_MODEL` for the server-side AI Agent Lab. Keep provider keys in backend secrets only.
 5. Install and run:
 
 ```bash
@@ -93,8 +100,10 @@ GitHub Pages only serves the static frontend; it cannot run this Node API. The A
 ## Important current limitations
 
 - The frontend remains local-first. Settings now supports a session-only API token, API health/auth test, and an explicit confirmed read/import of server tasks, projects, and activity. Normal create/edit/delete actions still use local storage; write-through sync awaits proper user authentication and workspace authorization.
-- The five robot characters are role definitions, not autonomous LLM agents yet.
-- Social accounts are not connected; no real posts are published.
+- The office is still a CSS pseudo-3D scene, not a true WebGL/3D-engine environment; character movement is not implemented.
+- The AI Agent Lab endpoint is implemented, but it only runs when `AI_API_KEY` is configured on the backend. It drafts plans/content and cannot execute real-world actions by itself.
+- The jobs API and database table provide a durable queue foundation; a worker/scheduler is not deployed, so queued jobs are not automatically processed.
+- Social accounts are not connected; no real posts are published. The `publish` queue kind is only a payload/status foundation until official platform OAuth, permissions, and worker processing are implemented.
 - Analytics currently reflect local task records, not live platform performance.
 - Bearer-token authentication is a secure starting point for a single-owner prototype, not a complete multi-user login system. Before public multi-user use, add real user authentication, per-user/workspace authorization, token rotation, audit policies, and deployment monitoring.
 
