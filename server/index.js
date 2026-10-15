@@ -310,6 +310,18 @@ app.get('/api/integrations/status', async (_req, res) => {
   res.json({ data: { platforms, livePublishingEnabled: false } });
 });
 
+app.get('/api/agent-runs', async (req, res, next) => {
+  try {
+    const limit = Math.min(Math.max(Number(req.query.limit) || 50, 1), 100);
+    const result = await pool.query(
+      `SELECT id, agent_id, task_id, job_id, status, attempt, error_code, artifact, started_at, finished_at, created_at, updated_at
+       FROM botverse_agent_runs WHERE workspace_id = $1 ORDER BY created_at DESC LIMIT $2`,
+      [req.workspaceId, limit]
+    );
+    res.json({ data: result.rows.map(row => ({ id: row.id, agent: row.agent_id, taskId: row.task_id, jobId: row.job_id, status: row.status, attempt: row.attempt, errorCode: row.error_code, artifact: row.artifact, startedAt: row.started_at, finishedAt: row.finished_at, createdAt: row.created_at, updatedAt: row.updated_at })) });
+  } catch (err) { next(err); }
+});
+
 app.get('/api/workflow/events', async (req, res, next) => {
   try {
     const limit = Math.min(Math.max(Number(req.query.limit) || 100, 1), 250);
