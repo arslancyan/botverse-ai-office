@@ -497,3 +497,5 @@ input,select,textarea{background:#07172b;color:#eef7ff;border-color:#244666;bord
 .agent-card[data-work-state="blocked"]{border-color:#a8485d;box-shadow:0 0 0 1px #ff87951c}
 .agent-card[data-work-state="working"]{border-color:#368f83}
 @media(max-width:760px){.kanban{grid-auto-columns:minmax(220px,82vw)}}
+
+.run-artifact{max-height:180px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;border-left:2px solid var(--blue);padding:8px 10px;margin:8px 0 0;color:#c5d9ed;background:#0a1727;border-radius:0 7px 7px 0;font-size:12px}
