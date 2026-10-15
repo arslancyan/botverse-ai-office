@@ -85,6 +85,13 @@ try {
   const updateResponse = await request('/api/tasks/' + task.id, { method: 'PATCH', body: { status: 'Editing' } });
   assert.equal(updateResponse.status, 200, 'task should be editable');
   assert.equal((await updateResponse.json()).data.status, 'Editing');
+  const blockedResponse = await request('/api/tasks/' + task.id, { method: 'PATCH', body: { status: 'Blocked' } });
+  assert.equal(blockedResponse.status, 200, 'blocked workflow state should be accepted');
+  const eventsResponse = await request('/api/workflow/events');
+  assert.equal(eventsResponse.status, 200, 'workflow events should be queryable');
+  const workflowEvents = (await eventsResponse.json()).data;
+  assert.ok(workflowEvents.some((event) => event.taskId === task.id && event.from === 'Idea' && event.to === 'Editing'), 'status transitions should be auditable');
+  assert.ok(workflowEvents.some((event) => event.taskId === task.id && event.to === 'Blocked'), 'blocked transitions should be recorded');
 
   const deleteTask = await request('/api/tasks/' + task.id, { method: 'DELETE' });
   assert.equal(deleteTask.status, 204, 'task should be deletable');
