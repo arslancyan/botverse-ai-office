@@ -194,7 +194,18 @@ app.patch('/api/tasks/:id', async (req, res, next) => {
     const previous = b.status !== undefined ? await pool.query('SELECT id, status, title FROM botverse_tasks WHERE id = $1 AND workspace_id = $2', [req.params.id, req.workspaceId]) : null;
     if (previous && !previous.rowCount) return sendError(res, 404, 'Task not found.');
     values.push(req.params.id, req.workspaceId);
-    const result = await pool.query('UPDATE botverse_tasks SET ' + fields.join(', ') + ', updated_at = NOW() WHERE id = 
+    const result = await pool.query(
+      'UPDATE botverse_tasks SET ' + fields.join(', ') + ', updated_at = NOW() WHERE id = $' + (values.length - 1) + ' AND workspace_id = $' + values.length + ' RETURNING *',
+      values
+    );
+    if (!result.rowCount) return sendError(res, 404, 'Task not found.');
+    if (previous && previous.rows[0].status !== result.rows[0].status) {
+      await pool.query(
+        'INSERT INTO botverse_workflow_events (workspace_id, task_id, event_type, from_state, to_state, message) VALUES ($1,$2,$3,$4,$5,$6)',
+        [req.workspaceId, result.rows[0].id, 'task.status_changed', previous.rows[0].status, result.rows[0].status, 'Task status changed: ' + previous.rows[0].title]
+      );
+    }
+    await activity(req.workspaceId, 'Updated task: ' + result.rows[0].title);
     res.json({ data: mapTask(result.rows[0]) });
   } catch (err) { next(err); }
 });
