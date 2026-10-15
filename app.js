@@ -264,9 +264,9 @@ $('workspaceName').value=safeLoad('bv.creator.name','BOTVERSE Creator Office');r
    world.querySelectorAll('.cube-room-tag').forEach(t=>t.classList.toggle('active',t===tag));
    const room=tag.dataset.room;
    world.querySelectorAll('.hybrid-room').forEach(r=>r.style.filter='');
-   if(room==='creative'){world.querySelector('.creative-zone').style.filter='brightness(1.25)';selectAgent('pixel');goPage('agents');toast('Creative Room · PIXEL selected')}
-   else if(room==='development'){world.querySelector('.dev-zone').style.filter='brightness(1.25)';selectAgent('byte');goPage('agents');toast('Development Room · BYTE selected')}
-   else {selectAgent('orbit');goPage('agents');toast('Meeting Room · ORBIT selected')}
+   if(room==='creative'){world.querySelector('.creative-zone').style.filter='brightness(1.25)';selectAgent('pixel');toast('Creative Room · PIXEL selected')}
+   else if(room==='development'){world.querySelector('.dev-zone').style.filter='brightness(1.25)';selectAgent('byte');toast('Development Room · BYTE selected')}
+   else {selectAgent('orbit');toast('Meeting Room · ORBIT selected')}
  }));
  $('cubeTasksBtn')?.addEventListener('click',()=>{const b=document.querySelector('[data-page="pipeline"]');if(b)b.click()});
  $('cubeAssignBtn')?.addEventListener('click',()=>{const b=$('newTaskBtn');if(b)b.click();setTimeout(()=>{if($('taskAgent'))$('taskAgent').value=selectedAgent},50)});
