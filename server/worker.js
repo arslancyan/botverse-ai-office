@@ -117,8 +117,9 @@ async function failJob(job, error) {
   const message = String(error?.message || 'Unknown worker error').slice(0, 1000);
   const retry = job.attempts < maxAttempts && job.kind === 'agent_draft' && !/not configured|disabled|requires a valid/i.test(message);
   await pool.query(
-    `UPDATE botverse_jobs SET status = $2, last_error = $3, updated_at = NOW()
-     WHERE id = $1`,
+    `UPDATE botverse_jobs SET status = $2, last_error = $3,
+     scheduled_at = CASE WHEN $2 = 'queued' THEN NOW() + make_interval(secs => LEAST(60, POWER(2, GREATEST(attempts - 1, 0))::int)) ELSE scheduled_at END,
+     updated_at = NOW() WHERE id = $1`,
     [job.id, retry ? 'queued' : 'failed', message]
   );
   if (job.run_id) {
