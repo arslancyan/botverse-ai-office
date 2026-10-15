@@ -21,7 +21,8 @@ const safeLoad=(key,fallback)=>{try{const v=localStorage.getItem(key);return v?J
 let tasks=safeLoad('bv.creator.tasks',safeLoad('botverse.tasks',SEED_TASKS));
 let projects=safeLoad('bv.creator.projects',SEED_PROJECTS);
 let logs=safeLoad('bv.creator.logs',safeLoad('botverse.activity',SEED_LOGS));
-tasks=tasks.map(t=>({...t,status:({'pending':'Idea','running':'Editing','completed':'Published','failed':'Idea'}[t.status]||t.status),channel:CHANNELS.includes(t.channel)?t.channel:(t.channel==='General'?'General':'TikTok'),priority:t.priority||'Medium',due:t.due||dayOffset(1),created:t.created||Date.now()}));\nlet selectedAgent='orbit',taskFilter='all',calendarDate=new Date(),editingTaskId=null,editingProjectId=null;
+tasks=tasks.map(t=>({...t,status:({'pending':'Idea','running':'Editing','completed':'Published','failed':'Idea'}[t.status]||t.status),channel:CHANNELS.includes(t.channel)?t.channel:(t.channel==='General'?'General':'TikTok'),priority:t.priority||'Medium',due:t.due||dayOffset(1),created:t.created||Date.now()}));
+let selectedAgent='orbit',taskFilter='all',calendarDate=new Date(),editingTaskId=null,editingProjectId=null;
 const agent=id=>AGENTS.find(a=>a.id===id)||AGENTS[0];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const prettyDate=s=>{if(!s)return 'No date';const d=new Date(s+'T12:00:00');return d.toLocaleDateString(undefined,{month:'short',day:'numeric'})};
