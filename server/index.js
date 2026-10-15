@@ -252,6 +252,53 @@ app.delete('/api/projects/:id', async (req, res, next) => {
     res.status(204).end();
   } catch (err) { next(err); }
 });
+function mapJob(row) {
+  return { id: row.id, kind: row.kind, payload: row.payload, status: row.status, scheduledAt: row.scheduled_at, attempts: row.attempts, lastError: row.last_error, created: row.created_at, updated: row.updated_at };
+}
+app.get('/api/jobs', async (req, res, next) => {
+  try {
+    const limit = Math.min(Math.max(Number(req.query.limit) || 100, 1), 250);
+    const result = await pool.query('SELECT * FROM botverse_jobs WHERE workspace_id = $1 ORDER BY scheduled_at NULLS FIRST, created_at DESC LIMIT $2', [req.workspaceId, limit]);
+    res.json({ data: result.rows.map(mapJob) });
+  } catch (err) { next(err); }
+});
+app.post('/api/jobs', async (req, res, next) => {
+  try {
+    const b = req.body || {};
+    if (!['agent_draft', 'publish'].includes(b.kind)) return sendError(res, 400, 'kind must be agent_draft or publish.');
+    if (!b.payload || typeof b.payload !== 'object' || Array.isArray(b.payload)) return sendError(res, 400, 'payload must be a JSON object.');
+    if (JSON.stringify(b.payload).length > 10000) return sendError(res, 400, 'payload must be at most 10000 characters.');
+    if (b.scheduledAt !== undefined && b.scheduledAt !== null && b.scheduledAt !== '' && (typeof b.scheduledAt !== 'string' || Number.isNaN(Date.parse(b.scheduledAt)))) return sendError(res, 400, 'scheduledAt must be a valid ISO date/time.');
+    if (b.kind === 'publish' && (!isText(b.payload.channel, 40) || !isText(b.payload.content, 1_000_000))) return sendError(res, 400, 'publish jobs require payload.channel and payload.content.');
+    const result = await pool.query(
+      'INSERT INTO botverse_jobs (workspace_id, kind, payload, scheduled_at) VALUES ($1,$2,$3,$4) RETURNING *',
+      [req.workspaceId, b.kind, JSON.stringify(b.payload), b.scheduledAt || null],
+    );
+    await activity(req.workspaceId, 'Queued ' + b.kind + ' job');
+    res.status(201).json({ data: mapJob(result.rows[0]) });
+  } catch (err) { next(err); }
+});
+app.patch('/api/jobs/:id', async (req, res, next) => {
+  try {
+    const b = req.body || {};
+    if (!['queued', 'cancelled'].includes(b.status)) return sendError(res, 400, 'Only queued or cancelled status can be set through this endpoint.');
+    const result = await pool.query(
+      "UPDATE botverse_jobs SET status = $1, updated_at = NOW() WHERE id = $2 AND workspace_id = $3 AND status IN ('queued','failed') RETURNING *",
+      [b.status, req.params.id, req.workspaceId],
+    );
+    if (!result.rowCount) return sendError(res, 404, 'Queued job not found or cannot be changed.');
+    await activity(req.workspaceId, 'Updated queued job: ' + result.rows[0].kind + ' → ' + b.status);
+    res.json({ data: mapJob(result.rows[0]) });
+  } catch (err) { next(err); }
+});
+app.delete('/api/jobs/:id', async (req, res, next) => {
+  try {
+    const result = await pool.query("DELETE FROM botverse_jobs WHERE id = $1 AND workspace_id = $2 AND status IN ('queued','cancelled','failed') RETURNING id", [req.params.id, req.workspaceId]);
+    if (!result.rowCount) return sendError(res, 404, 'Job not found or already running.');
+    res.status(204).end();
+  } catch (err) { next(err); }
+});
+
 app.get('/api/activity', async (req, res, next) => {
   try {
     const result = await pool.query('SELECT id, message, created_at FROM botverse_activity WHERE workspace_id = $1 ORDER BY created_at DESC LIMIT 100', [req.workspaceId]);
