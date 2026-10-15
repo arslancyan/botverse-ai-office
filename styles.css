@@ -474,3 +474,18 @@ input,select,textarea{background:#07172b;color:#eef7ff;border-color:#244666;bord
 #page-office .human-bot .bot-label{box-shadow:0 5px 12px #0006}
 @media(max-width:980px){.office-bottom-grid{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:760px){.office-bottom-grid{gap:12px;margin-top:12px}.office-project-list,.office-schedule-list{padding:6px 12px 10px}.office-schedule-row{flex-wrap:wrap}.office-schedule-row .office-preview-copy{flex-basis:calc(100% - 100px)}.office-schedule-row .task-status{margin-left:25px}.office-preview-copy b{white-space:normal}}
+
+
+/* Agent workflow state indicators: visual state is derived from assigned tasks. */
+.bot-char[data-work-state="working"] .human-avatar{filter:drop-shadow(0 0 9px #4fe7c2)}
+.bot-char[data-work-state="needs-review"] .human-avatar{filter:drop-shadow(0 0 9px #ffcf70)}
+.bot-char[data-work-state="blocked"] .human-avatar{filter:drop-shadow(0 0 9px #ff788f)}
+.bot-char[data-work-state="completed"] .human-avatar{filter:drop-shadow(0 0 8px #8c9eb6)}
+.bot-char[data-work-state="assigned"] .human-avatar{filter:drop-shadow(0 0 8px #6db7ff)}
+#teamList .team-row .status{white-space:nowrap}
+#teamList .team-row[data-work-state="working"] .status{color:#65e6bf}
+#teamList .team-row[data-work-state="needs-review"] .status{color:#ffd17d}
+#teamList .team-row[data-work-state="completed"] .status{color:#a4b5cc}
+#teamList .team-row[data-work-state="assigned"] .status{color:#83c8ff}
+.bot-char:focus-visible{outline:2px solid #74dcff;outline-offset:4px}
+@media(prefers-reduced-motion:reduce){.bot-char .human-avatar{filter:none!important}}
