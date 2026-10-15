@@ -39,7 +39,7 @@ Optional workspace header:
 | POST | `/api/projects` | Create a project |
 | PATCH | `/api/projects/:id` | Update project fields |
 | DELETE | `/api/projects/:id` | Delete a project |
-| GET | `/api/activity` | Read latest 100 activity entries |
+| GET | `/api/activity` | Read latest 100 activity entries |\n| GET | `/api/integrations/status` | Readiness only; never returns credentials or claims accounts are connected |
 | POST | `/api/agents/run` | Run a specialist AI draft/plan (requires `AI_API_KEY`) |
 | GET | `/api/jobs` | List queued jobs for a workspace |
 | POST | `/api/jobs` | Queue an agent-draft or publish job payload |
@@ -102,17 +102,17 @@ GitHub Pages only serves the static frontend; it cannot run this Node API. The A
 - The frontend remains local-first. Settings now supports a session-only API token, API health/auth test, and an explicit confirmed read/import of server tasks, projects, and activity. Normal create/edit/delete actions still use local storage; write-through sync awaits proper user authentication and workspace authorization.
 - The office is still a CSS pseudo-3D scene, not a true WebGL/3D-engine environment; character movement is not implemented.
 - The AI Agent Lab endpoint is implemented, but it only runs when `AI_API_KEY` is configured on the backend. It drafts plans/content and cannot execute real-world actions by itself.
-- The jobs API and database table provide a durable queue foundation; a worker/scheduler is not deployed, so queued jobs are not automatically processed.
-- Social accounts are not connected; no real posts are published. The `publish` queue kind is only a payload/status foundation until official platform OAuth, permissions, and worker processing are implemented.
+- A local polling worker is available via `npm run worker`. It processes queued `agent_draft` jobs when AI_API_KEY is configured, uses row locking to avoid duplicate claims, and retries eligible transient failures. It is not deployed or running automatically. Publishing jobs intentionally fail closed until official OAuth adapters exist.
+- Social accounts are not connected; no real posts are published. The integration readiness endpoint only reports whether OAuth app metadata is present. OAuth callbacks, token vault, account selection, permissions and platform adapters still need implementation and testing.
 - Analytics currently reflect local task records, not live platform performance.
 - Bearer-token authentication is a secure starting point for a single-owner prototype, not a complete multi-user login system. Before public multi-user use, add real user authentication, per-user/workspace authorization, token rotation, audit policies, and deployment monitoring.
 
 ## Roadmap
 
 1. Deploy and smoke-test the API and database.
-2. Finish API write-through after adding real user authentication and workspace authorization.
+2. Finish task/project CRUD write-through after adding real user authentication and workspace authorization.
 3. Implement secure user authentication and workspace membership.
 4. Connect a model provider through the backend with bounded tools and human approval.
-5. Add media library, job queue, and retryable scheduled publishing.
+5. Add media library, operator approval, and retryable scheduled publishing through official platform adapters.
 6. Integrate official social APIs and live analytics where account access and platform policy permit.
 7. Upgrade the virtual office to a true 3D engine after the workflow is validated.
