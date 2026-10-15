@@ -299,6 +299,17 @@ app.delete('/api/jobs/:id', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+app.get('/api/integrations/status', async (_req, res) => {
+  // Status-only discovery: credentials are never returned to the browser.
+  const platforms = [
+    { id: 'youtube', name: 'YouTube', configured: Boolean(process.env.YOUTUBE_CLIENT_ID && process.env.YOUTUBE_CLIENT_SECRET && process.env.YOUTUBE_REDIRECT_URI) },
+    { id: 'tiktok', name: 'TikTok', configured: Boolean(process.env.TIKTOK_CLIENT_KEY && process.env.TIKTOK_CLIENT_SECRET && process.env.TIKTOK_REDIRECT_URI) },
+    { id: 'facebook', name: 'Facebook', configured: Boolean(process.env.META_APP_ID && process.env.META_APP_SECRET && process.env.META_REDIRECT_URI) },
+    { id: 'instagram', name: 'Instagram', configured: Boolean(process.env.META_APP_ID && process.env.META_APP_SECRET && process.env.META_REDIRECT_URI) }
+  ].map(platform => ({ ...platform, connected: false, publishEnabled: false, note: 'OAuth callback, granted scopes, account selection, and token storage are not implemented yet.' }));
+  res.json({ data: { platforms, livePublishingEnabled: false } });
+});
+
 app.get('/api/activity', async (req, res, next) => {
   try {
     const result = await pool.query('SELECT id, message, created_at FROM botverse_activity WHERE workspace_id = $1 ORDER BY created_at DESC LIMIT 100', [req.workspaceId]);
