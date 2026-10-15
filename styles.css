@@ -294,3 +294,15 @@
 #page-office .scene-zoomed{transform:scale(1.06);transform-origin:center;transition:transform .25s}
 @media(max-width:760px){.cube-status-card{left:7px;bottom:7px;width:135px;padding:7px}.cube-bot-card{right:7px;bottom:7px;width:145px;padding:7px}.cube-status-title{font-size:6px}.cube-status-title b{font-size:6px}.cube-room-tag{padding:5px}.cube-room-tag b{font-size:6px}.tag-meeting{right:6%;top:33%}.tag-creative{left:5%;top:54%}.tag-dev{right:5%;top:57%}.cube-bot-card-top>span{width:25px;height:25px;font-size:16px}.cube-bot-card-top b{font-size:8px}.cube-bot-card-top small,.cube-bot-detail{font-size:7px}.cube-mini-btn{font-size:7px;padding:6px}}
 @media(max-width:500px){.cube-status-card{width:116px}.cube-bot-card{width:122px}.cube-status-line{font-size:8px}.cube-room-tag small{display:none}#page-office .human-avatar{width:30px;height:35px}#page-office .chibi{transform:scale(.66);transform-origin:bottom center}#page-office .human-bot .bot-label{font-size:7px;padding:2px 4px}#page-office .scene-hud>span{font-size:5px;padding:4px}.tag-creative{top:50%}.tag-dev{top:54%}}
+
+
+/* AI Agent Lab and finishing polish for production-readiness stage */
+.ai-lab-panel{border-color:#294b6b;background:linear-gradient(145deg,#0e1b2e,#0a1525)}
+.ai-lab-panel .panel-head{border-bottom:1px solid #29435d}
+.ai-lab-panel .panel-head h2{color:#b7edff;letter-spacing:1.2px}
+.ai-lab-panel .pill{border-color:#3b7a9a;color:#8ce6ff;background:#102d43}
+.ai-lab-panel textarea{min-height:100px;resize:vertical}
+#runAiAgent:disabled{opacity:.55;cursor:wait}
+.ai-agent-result{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65;font-size:13px;color:#d9eafa;background:linear-gradient(145deg,#081426,#0c1d31);border:1px solid #315574;border-radius:10px;padding:16px;margin-top:14px;max-height:420px;overflow:auto;box-shadow:inset 0 0 22px #3dcfff08}
+.ai-agent-result[hidden]{display:none}
+@media(max-width:600px){.ai-agent-result{font-size:12px;padding:12px}.ai-lab-panel .panel-head{align-items:flex-start;gap:8px}}
