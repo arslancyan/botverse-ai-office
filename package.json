@@ -9,7 +9,8 @@
   },
   "scripts": {
     "start": "node server/index.js",
-    "check": "node --check server/index.js && node --check app.js"
+    "check": "node --check server/index.js && node --check app.js",
+    "migrate": "node server/migrate.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
