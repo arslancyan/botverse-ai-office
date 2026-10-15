@@ -152,3 +152,55 @@
 .world.scene-zoomed:has(.scene-view-top){transform:scale(1.1)}
 @media(max-width:900px){.scene-toolbar{align-items:flex-start}.scene-controls{width:100%}.scene-control{flex:1}.world{height:500px}}
 @media(max-width:700px){.scene-toolbar{padding:11px}.scene-control{font-size:9px;padding:7px 6px}.world-wrap{padding:8px}.world{height:420px;min-width:590px}.office-window>b{font-size:17px}.hybrid-room{top:35%;height:50%}.human-avatar{width:43px;height:50px}.chibi{transform:scale(.9);transform-origin:bottom center}.scene-hud>span{font-size:7px;padding:5px}.scene-hud>b{display:none}}
+
+
+/* STAGE 1 — cinematic BOTVERSE campus as the primary website surface */
+#page-office .stats{display:none}
+#page-office .layout{display:block;grid-template-columns:minmax(0,1fr);gap:0}
+#page-office .layout>div:first-child{min-width:0}
+#page-office .panel:has(.world){padding:0;overflow:hidden;border:1px solid #244968;border-radius:15px;background:#071426;box-shadow:0 18px 50px #0005}
+#page-office .panel:has(.world)>.panel-head{position:absolute;z-index:12;left:24px;top:18px;right:24px;pointer-events:none;background:linear-gradient(90deg,#061324e8,#061324b0,transparent);padding:14px 18px;border:1px solid #6dcfff29;border-radius:10px;backdrop-filter:blur(10px);max-width:460px}
+#page-office .panel:has(.world)>.panel-head h2{font-size:12px;letter-spacing:1.7px;color:#c9f5ff}
+#page-office .panel:has(.world)>.panel-head p{font-size:10px;color:#9bb7d0}
+#page-office .panel:has(.world)>.panel-head .pill{display:none}
+#page-office .scene-toolbar{margin-top:0;padding:12px 16px;background:linear-gradient(100deg,#0c1b30,#102540);border-radius:0;border-color:#234462}
+#page-office .scene-toolbar-copy b{font-size:10px;letter-spacing:2px;color:#79e4ff}
+#page-office .scene-toolbar-copy span{font-size:10px}
+#page-office .world-wrap{border-radius:0;padding:0;border:0;background:#08172a}
+#page-office .world{height:clamp(490px,68vw,760px);min-width:0;border-radius:0;border:0;background:radial-gradient(ellipse at 20% 35%,#173d6a 0,transparent 38%),radial-gradient(ellipse at 80% 70%,#3a1d4b 0,transparent 35%),linear-gradient(180deg,#09142b,#0c1a2e 70%,#101b2a);box-shadow:inset 0 0 90px #0008}
+#page-office .world:before{background-size:42px 42px;opacity:.25}
+#page-office .office-floor{inset:12% -3% -3%;clip-path:polygon(0 0,100% 0,100% 80%,50% 100%,0 80%);background:linear-gradient(145deg,#25435b 0%,#172e46 42%,#0c1b2e 100%);filter:drop-shadow(0 20px 18px #0008)}
+#page-office .office-floor:before{inset:26% 0 0;background-size:76px 48px;opacity:.5}
+#page-office .office-window{height:30%;background:linear-gradient(180deg,#08152e,#142a4e 68%,#1b3852);border-bottom:4px solid #48d9ff;box-shadow:0 8px 25px #21baff35}
+#page-office .office-window>span{font-size:10px;letter-spacing:2.5px}
+#page-office .office-window>b{font-size:clamp(18px,2vw,30px);line-height:1.08;letter-spacing:1.4px;max-width:45%;text-shadow:0 0 22px #3dcfff7a}
+#page-office .office-window>small{font-size:9px;letter-spacing:2px}
+#page-office .city-lights{width:50%;height:92%;right:4%;opacity:1;filter:drop-shadow(0 0 12px #38aaff)}
+#page-office .hybrid-room{top:34%;height:50%;border-radius:8px;box-shadow:0 10px 0 #07101c,0 20px 30px #0009,inset 0 0 26px #70d6ff0d}
+#page-office .creative-zone{left:2%;width:44%;border-top:5px solid #ff6fca;background:linear-gradient(145deg,#49344f,#1d2b42 80%)}
+#page-office .dev-zone{right:2%;width:44%;border-top:5px solid #4cdfff;background:linear-gradient(145deg,#21465f,#11243a 80%)}
+#page-office .room-sign{font-size:clamp(9px,.9vw,13px);padding:12px 13px;letter-spacing:1px}
+#page-office .room-sign small{font-size:8px}
+#page-office .desk{height:29%;background:linear-gradient(145deg,#7189a0,#2c4962 72%);box-shadow:0 7px 0 #091421,0 11px 15px #0005,inset 0 1px 0 #d7e9f444}
+#page-office .monitor{height:68%;background:linear-gradient(135deg,#0b243b,#143650);box-shadow:0 0 23px #42d8ff3d,inset 0 0 14px #44caff18}
+#page-office .shelf,#page-office .server-rack{font-size:12px;padding:7px 8px}
+#page-office .plant{font-size:24px}
+#page-office .hub-platform{left:42%;top:56%;width:16%;height:20%;border-radius:14px;background:radial-gradient(circle at 50% 0,#2b6589,#102239 72%);box-shadow:0 0 0 6px #39bfff12,0 0 35px #36bfff55,0 9px 0 #06101b,inset 0 1px 0 #a4eaff55}
+#page-office .hub-orb{width:43px;height:43px;font-size:27px}
+#page-office .hub-platform b{font-size:clamp(7px,.65vw,10px);letter-spacing:1px}
+#page-office .hub-platform small{font-size:7px;letter-spacing:1px}
+#page-office .holo-ring{top:69%;width:25%;height:8%;border-width:3px;box-shadow:0 0 13px #58dcff,0 0 35px #58dcff7a,inset 0 0 14px #58dcff3b}
+#page-office .human-avatar{width:57px;height:64px}
+#page-office .chibi{transform:scale(1.08);transform-origin:bottom center}
+#page-office .human-bot .bot-label{font-size:10px;padding:4px 9px;border-radius:6px;box-shadow:0 4px 16px #0007,0 0 12px color-mix(in srgb,var(--bot) 20%,transparent)}
+#page-office .human-bot .bot-role{font-size:9px}
+#page-office .scene-hud{left:16px;right:16px;top:13px}
+#page-office .scene-hud>span,#page-office .scene-hud>b{background:#061324e8;border-color:#477294;padding:7px 10px}
+#page-office .legend{padding:11px 16px;background:#0b1b2e;border-top:1px solid #284762}
+#page-office .panel-head:not(:has(+.world-wrap)){position:static}
+#page-office .panel:has(.world) .panel-head{margin:0}
+#page-office .panel:has(.world) .panel-head~.scene-toolbar{padding-top:14px}
+#page-office .panel:has(.world) .panel-head{pointer-events:none}
+@media(min-width:1100px){#page-office .world{height:clamp(650px,57vw,820px)}}
+@media(max-width:900px){#page-office .panel:has(.world)>.panel-head{left:12px;right:12px;top:12px;max-width:360px;padding:10px 12px}#page-office .world{height:550px}#page-office .office-window>b{font-size:19px}}
+@media(max-width:650px){#page-office .scene-toolbar{align-items:flex-start}#page-office .scene-controls{width:100%}#page-office .scene-control{flex:1}#page-office .world{height:450px;min-width:0}#page-office .office-window>b{font-size:15px}#page-office .hybrid-room{top:36%;height:48%}#page-office .room-sign{font-size:8px;padding:8px}#page-office .room-sign small{font-size:6px}#page-office .human-avatar{width:42px;height:48px}#page-office .chibi{transform:scale(.82);transform-origin:bottom center}#page-office .human-bot .bot-role{display:none}#page-office .scene-hud>span{font-size:6px;padding:5px}#page-office .scene-hud>b{display:none}#page-office .hub-platform{width:19%;left:40.5%}#page-office .hub-orb{width:27px;height:27px;font-size:20px}}
