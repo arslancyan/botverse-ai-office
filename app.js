@@ -35,7 +35,7 @@ function taskHtml(t){return '<article class="task"><button class="check '+(t.sta
 function kanbanHtml(t){return '<article class="kanban-item"><b>'+esc(t.title)+'</b><p>'+esc(t.channel)+' · '+agent(t.agent).emoji+' '+agent(t.agent).name+'</p><div class="toolbar"><span class="pill">'+esc(t.priority||'Medium')+'</span><button class="btn" style="padding:4px 6px;font-size:10px" data-task-action="edit" data-id="'+t.id+'">Edit</button></div></article>'}
 function renderTasks(){const shown=taskFilter==='all'?tasks:tasks.filter(t=>t.status===taskFilter);$('runningCount').textContent=tasks.filter(t=>['Scripting','Editing'].includes(t.status)).length;$('doneCount').textContent=tasks.filter(t=>t.status==='Published').length;$('allTasks').innerHTML=shown.map(taskHtml).join('')||'<div class="empty">No content in this filter yet. Create a task to get started.</div>';$('overviewTasks').innerHTML=tasks.slice().sort((a,b)=>new Date(a.due||'9999-12-31')-new Date(b.due||'9999-12-31')).slice(0,4).map(taskHtml).join('')||'<div class="empty">No tasks yet.</div>';$('navTaskCount').textContent=tasks.filter(t=>t.status!=='Published').length;$('filterStatus').value=taskFilter;
 $('kanban').innerHTML=STATUSES.slice(0,4).map(s=>'<section class="kanban-col"><div class="kanban-head"><span>'+s.toUpperCase()+'</span><span class="pill">'+tasks.filter(t=>t.status===s).length+'</span></div>'+tasks.filter(t=>t.status===s).map(kanbanHtml).join('')+'</section>').join('')}
-function renderAgents(){const teamHtml=a=>{const state=agentWorkState(a.id);return '<div class="team-row" data-agent-pick="'+a.id+'" data-work-state="'+state.label.toLowerCase().replace(/\\s+/g,'-')+'"><div class="mini-buddy" style="color:'+a.color+'">'+a.emoji+'</div><div class="team-info"><b>'+a.name+'</b><small>'+a.role+'</small></div><span class="status">● '+state.label+'</span></div>'};$('teamList').innerHTML=AGENTS.map(teamHtml).join('');$('agentCards').innerHTML=AGENTS.map(a=>'<article class="agent-card" data-agent-pick="'+a.id+'"><div style="font-size:34px">'+a.emoji+'</div><h3>'+a.name+'</h3><span class="muted small">'+a.role+'</span><p>'+a.desc+'</p><div class="detail"><span>Specialty</span><b>'+a.specialty+'</b></div><div class="detail"><span>Assigned tasks</span><b>'+tasks.filter(t=>t.agent===a.id).length+'</b></div><button class="btn" style="width:100%;margin-top:8px" data-agent-pick="'+a.id+'">Select teammate</button></article>').join('');$('taskAgent').innerHTML=AGENTS.map(a=>'<option value="'+a.id+'">'+a.name+' — '+a.role+'</option>').join('')}
+function renderAgents(){const teamHtml=a=>{const state=agentWorkState(a.id);return '<div class="team-row" data-agent-pick="'+a.id+'" data-work-state="'+state.label.toLowerCase().replace(/\s+/g,'-')+'"><div class="mini-buddy" style="color:'+a.color+'">'+a.emoji+'</div><div class="team-info"><b>'+a.name+'</b><small>'+a.role+'</small></div><span class="status">● '+state.label+'</span></div>'};$('teamList').innerHTML=AGENTS.map(teamHtml).join('');$('agentCards').innerHTML=AGENTS.map(a=>'<article class="agent-card" data-agent-pick="'+a.id+'"><div style="font-size:34px">'+a.emoji+'</div><h3>'+a.name+'</h3><span class="muted small">'+a.role+'</span><p>'+a.desc+'</p><div class="detail"><span>Specialty</span><b>'+a.specialty+'</b></div><div class="detail"><span>Assigned tasks</span><b>'+tasks.filter(t=>t.agent===a.id).length+'</b></div><button class="btn" style="width:100%;margin-top:8px" data-agent-pick="'+a.id+'">Select teammate</button></article>').join('');$('taskAgent').innerHTML=AGENTS.map(a=>'<option value="'+a.id+'">'+a.name+' — '+a.role+'</option>').join('')}
 function selectAgent(id){selectedAgent=id;const a=agent(id),state=agentWorkState(id);$('profileName').textContent=a.name;$('profileRole').textContent=a.role+' · '+state.label;$('profileEmoji').textContent=a.emoji;$('profileTitle').textContent=a.specialty;$('profileDesc').textContent=a.desc;$('profileTasks').textContent=tasks.filter(t=>t.agent===id).length;$('profileSpecLine').textContent=state.label;$('taskAgent').value=id;if($('cubeBotEmoji'))$('cubeBotEmoji').textContent=a.emoji;if($('cubeBotName'))$('cubeBotName').textContent=a.name;if($('cubeBotRole'))$('cubeBotRole').textContent=a.role+' · '+state.label;if($('cubeBotDetail'))$('cubeBotDetail').textContent=state.detail;document.querySelectorAll('.bot-char').forEach(b=>b.classList.toggle('selected',b.dataset.agent===id))}
 function renderOfficePreviews(){
  const projectTarget=$('officeProjects'),scheduleTarget=$('officeSchedule');
@@ -50,7 +50,9 @@ function renderAnalytics(){const published=tasks.filter(t=>t.status==='Published
 function agentWorkState(id){
  const assigned=tasks.filter(t=>t.agent===id);
  if(!assigned.length)return {label:'Idle',detail:'No tasks assigned'};
- const blocked=assigned.find(t=>t.status==='Blocked');\n if(blocked)return {label:'Blocked',detail:blocked.title};\n const active=assigned.find(t=>['Scripting','Editing'].includes(t.status));
+ const blocked=assigned.find(t=>t.status==='Blocked');
+ if(blocked)return {label:'Blocked',detail:blocked.title};
+ const active=assigned.find(t=>['Scripting','Editing'].includes(t.status));
  if(active)return {label:'Working',detail:active.title};
  const review=assigned.find(t=>t.status==='Ready');
  if(review)return {label:'Needs review',detail:review.title};
@@ -61,21 +63,27 @@ function agentWorkState(id){
  if(assigned.every(t=>t.status==='Published'))return {label:'Completed',detail:'All assigned tasks are published'};
  return {label:'Idle',detail:'Waiting for next task'};
 }
-function refreshWorkflowStats(){\n const active=tasks.filter(t=>['Scripting','Editing'].includes(t.status)).length;\n const published=tasks.filter(t=>t.status==='Published').length;\n const el=$('runningCount');if(el)el.textContent=active;\n const done=$('doneCount');if(done)done.textContent=published;\n}\nfunction renderAgentStates(){
+function refreshWorkflowStats(){
+ const active=tasks.filter(t=>['Scripting','Editing'].includes(t.status)).length;
+ const published=tasks.filter(t=>t.status==='Published').length;
+ const el=$('runningCount');if(el)el.textContent=active;
+ const done=$('doneCount');if(done)done.textContent=published;
+}
+function renderAgentStates(){
  document.querySelectorAll('#teamList .team-row[data-agent-pick]').forEach(row=>{
   const state=agentWorkState(row.dataset.agentPick),badge=row.querySelector('.status');
-  row.dataset.workState=state.label.toLowerCase().replace(/\\s+/g,'-');
+  row.dataset.workState=state.label.toLowerCase().replace(/\s+/g,'-');
   if(badge)badge.textContent='● '+state.label;
   row.title=state.detail;
  });
  document.querySelectorAll('.bot-char[data-agent]').forEach(bot=>{
   const state=agentWorkState(bot.dataset.agent);
-  bot.dataset.workState=state.label.toLowerCase().replace(/\\s+/g,'-');
+  bot.dataset.workState=state.label.toLowerCase().replace(/\s+/g,'-');
   bot.title=agent(bot.dataset.agent).name+' — '+state.label+': '+state.detail;
  });
  const selected=agentWorkState(selectedAgent);
  const profile=document.querySelector('#page-agents .agent-card[data-agent-pick="'+selectedAgent+'"]');
- if(profile)profile.dataset.workState=selected.label.toLowerCase().replace(/\\s+/g,'-');
+ if(profile)profile.dataset.workState=selected.label.toLowerCase().replace(/\s+/g,'-');
 }
 function render(){renderTasks();renderAgents();renderAgentStates();renderProjects();renderCalendar();renderLogs();renderAnalytics();selectAgent(selectedAgent);renderAgentStates();refreshWorkflowStats()}
 const PAGE_INFO={office:['Creator Office ✨','One little AI crew. All your content channels.'],dashboard:['Creator Dashboard','Your content operation at a glance.'],calendar:['Content Calendar','Plan publishing dates and see what is coming up.'],pipeline:['Production Pipeline','Move every idea from scripting to published.'],projects:['Projects & Campaigns','Group content work into campaigns and recurring series.'],agents:['AI Team','Five friendly specialist bots for your creator company.'],analytics:['Content Analytics','A local overview of your content plan, not live platform metrics.'],activity:['Activity Log','Recent changes saved in this browser.'],settings:['Workspace Settings','Manage your local workspace and export your data.']};
