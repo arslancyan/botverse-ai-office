@@ -441,3 +441,36 @@ input,select,textarea{background:#07172b;color:#eef7ff;border-color:#244666;bord
 @media(max-width:1050px){.app{grid-template-columns:205px minmax(0,1fr)}.layout{grid-template-columns:minmax(0,1fr)}.stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.stack>.panel:last-child{grid-column:1/-1}}
 @media(max-width:760px){.app{grid-template-columns:minmax(0,1fr)}.main{padding:14px 12px 28px}.sidebar{z-index:30}.top{align-items:flex-start}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stack{grid-template-columns:minmax(0,1fr)}.stack>.panel:last-child{grid-column:auto}.panel-head{padding:14px}.world-wrap{padding:8px}.stat{padding:12px}.stat-num{font-size:25px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+
+/* Virtual office overview: cinematic depth, agent floor and live operational previews */
+.office-bottom-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:16px}
+.office-project-list,.office-schedule-list{padding:8px 16px 14px}
+.office-project-row,.office-schedule-row{display:flex;align-items:center;gap:11px;min-width:0;padding:11px 2px;border-bottom:1px solid #142e4b}
+.office-project-row:last-child,.office-schedule-row:last-child{border-bottom:0}
+.project-mark{flex:0 0 38px;height:38px;display:grid;place-items:center;border-radius:10px;border:1px solid #2a6393;background:linear-gradient(145deg,#153e65,#0a1c33);color:#83e8ff;font-size:19px;box-shadow:inset 0 0 15px #45caff0b}
+.office-preview-copy{min-width:0;flex:1}
+.office-preview-copy b{display:block;font-size:11px;line-height:1.4;color:#e8f5ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.office-preview-copy small{display:block;font-size:10px;color:#7899bb;margin-top:4px}
+.office-preview-date{font-size:10px;color:#8bb2d7;white-space:nowrap}
+.office-schedule-row{gap:9px}
+.schedule-marker{width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:#4fe7c2;box-shadow:0 0 10px #4fe7c277}
+.schedule-date{font-size:10px;color:#9ac5e9;min-width:48px}
+.office-schedule-row .task-status{font-size:9px;padding:3px 6px;white-space:nowrap}
+#page-office .world-wrap{perspective:1100px}
+#page-office .world{transform-style:preserve-3d}
+#page-office .office-floor{transform:perspective(1100px) rotateX(2deg);transform-origin:center 60%;transition:filter .25s,transform .3s}
+#page-office .office-floor:before{content:"";position:absolute;z-index:0;inset:0;background:linear-gradient(135deg,#69d7ff0a,transparent 35%,#a67aff0a 75%,transparent);pointer-events:none}
+#page-office .office-floor:after{border-color:#365779;box-shadow:inset 0 0 0 2px #a4d8ff14,0 0 0 1px #9cddff12,0 0 25px #248fff14}
+#page-office .hybrid-room{backdrop-filter:blur(2px)}
+#page-office .creative-zone{background:linear-gradient(145deg,#44314f,#1a263f 76%);border-top-color:#ff83d3}
+#page-office .dev-zone{background:linear-gradient(145deg,#1b405b,#101f35 76%);border-top-color:#58d9ff}
+#page-office .desk{box-shadow:0 4px 0 #050d18,0 8px 12px #0006,inset 0 1px 0 #ffffff12}
+#page-office .server-rack{filter:drop-shadow(0 0 8px #48cfff38)}
+#page-office .plant{filter:drop-shadow(0 4px 5px #0007)}
+#page-office .floor-stairs span{box-shadow:0 0 12px #4adfff45}
+#page-office .cube-room-tag{backdrop-filter:blur(10px);box-shadow:0 7px 18px #0007,0 0 15px #4acfff12}
+#page-office .bot-char.selected{z-index:12;filter:drop-shadow(0 0 9px #48d8ff66)}
+#page-office .human-bot .bot-label{box-shadow:0 5px 12px #0006}
+@media(max-width:980px){.office-bottom-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:760px){.office-bottom-grid{gap:12px;margin-top:12px}.office-project-list,.office-schedule-list{padding:6px 12px 10px}.office-schedule-row{flex-wrap:wrap}.office-schedule-row .office-preview-copy{flex-basis:calc(100% - 100px)}.office-schedule-row .task-status{margin-left:25px}.office-preview-copy b{white-space:normal}}
