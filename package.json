@@ -9,9 +9,10 @@
   },
   "scripts": {
     "start": "node server/index.js",
-    "check": "node --check server/index.js && node --check server/migrate.js && node --check server/smoke-test.js && node --check app.js",
+    "check": "node --check server/index.js && node --check server/migrate.js && node --check server/smoke-test.js && node --check app.js && node --check server/worker.js",
     "migrate": "node server/migrate.js",
-    "test:api": "node server/smoke-test.js"
+    "test:api": "node server/smoke-test.js",
+    "worker": "node server/worker.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
