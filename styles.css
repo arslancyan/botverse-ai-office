@@ -43,3 +43,51 @@
 .human-bot .bot-label{font-size:9px;border:1px solid color-mix(in srgb,var(--bot) 50%,transparent);background:#071323f2;box-shadow:0 0 10px color-mix(in srgb,var(--bot) 18%,transparent)}
 .human-bot .bot-role{font-size:8px;color:#d0e3f5;text-shadow:0 1px 4px #000}
 @media(max-width:700px){.world{height:420px;min-width:560px}.office-window>b{font-size:16px}.human-avatar{font-size:31px}.room-sign{font-size:9px}.hub-platform{width:18%;left:41%}}
+
+
+/* Visual pass 02 — richer game-like office, custom chibi people and HUD */
+.scene-hud{position:absolute;z-index:9;left:14px;right:14px;top:12px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;pointer-events:none}
+.scene-hud>span,.scene-hud>b{font-size:8px;letter-spacing:.8px;color:#b6d5f1;background:#071323d9;border:1px solid #345674;padding:6px 8px;border-radius:6px;box-shadow:0 4px 15px #02081466}
+.scene-hud .scene-live{color:#9af5d0;display:flex;align-items:center;gap:6px}
+.scene-live i{width:6px;height:6px;border-radius:50%;background:#54edb2;box-shadow:0 0 8px #54edb2;display:inline-block}
+.scene-hud>b{margin-left:auto;color:#c9d8f0;font-weight:600}
+.office-floor{inset:7% 0 0;background:linear-gradient(145deg,#1a3550,#0c192c 72%);clip-path:polygon(0 0,100% 0,100% 82%,50% 100%,0 82%)}
+.office-floor:before{content:"";position:absolute;inset:24% 0 0;background:linear-gradient(30deg,transparent 48.8%,#4c719233 49.4%,#4c719233 50%,transparent 50.6%),linear-gradient(150deg,transparent 48.8%,#4c719233 49.4%,#4c719233 50%,transparent 50.6%);background-size:52px 34px;opacity:.65}
+.office-window{height:29%;padding:16px 20px;background:linear-gradient(180deg,#0c1730,#142749 70%,#20364d)}
+.office-window>b{font-size:21px;max-width:55%;position:relative;z-index:1}
+.office-window>small{position:relative;z-index:1}
+.city-lights{width:49%;height:90%;opacity:.95;background:linear-gradient(90deg,transparent 0 4%,#2c6593 4% 9%,transparent 9% 13%,#507bb1 13% 20%,transparent 20% 24%,#397aa4 24% 33%,transparent 33% 37%,#7895c7 37% 43%,transparent 43% 48%,#3e679f 48% 57%,transparent 57% 63%,#507ca8 63% 72%,transparent 72%);filter:drop-shadow(0 0 10px #36aaff)}
+.hybrid-room{top:32%;height:53%;border-radius:10px;box-shadow:0 8px 0 #07101c,0 18px 30px #0009,inset 0 0 22px #78caff0b}
+.creative-zone{left:3%;width:43%}.dev-zone{right:3%;width:43%}
+.room-sign{font-size:11px;padding:10px 11px;text-shadow:0 0 14px #50dfff88}
+.room-sign small{font-size:7px;letter-spacing:1.1px}
+.desk{height:30%;border-radius:6px;background:linear-gradient(145deg,#5c7893,#263e59);box-shadow:0 6px 0 #091421,0 0 13px #53cfff18}
+.desk-a{left:7%;top:38%}.desk-b{right:6%;top:57%}.desk-c{left:7%;top:38%}.desk-d{right:6%;top:57%}
+.monitor{width:76%;height:66%;border-width:2px;box-shadow:0 0 18px #42d8ff26,inset 0 0 12px #44caff12}
+.shelf,.server-rack{box-shadow:3px 4px 0 #070f1a,0 0 14px #37cfff21}
+.hub-platform{left:42%;top:55%;width:16%;height:22%;background:linear-gradient(145deg,#214b70,#0c1b31);box-shadow:0 0 0 5px #39bfff12,0 0 30px #36bfff4a,0 8px 0 #06101b}
+.holo-ring{position:absolute;z-index:2;left:50%;top:65%;width:23%;height:7%;border:2px solid #58dcff;border-radius:50%;transform:translate(-50%,-50%) rotate(-8deg);box-shadow:0 0 10px #58dcff,0 0 28px #58dcff66;pointer-events:none}
+.human-avatar{display:flex;align-items:center;justify-content:center;width:49px;height:56px;filter:drop-shadow(0 6px 0 #07111e) drop-shadow(0 0 10px color-mix(in srgb,var(--bot) 28%,transparent))}
+.chibi{position:relative;display:block;width:42px;height:53px;transform-origin:bottom center;animation:chibiIdle 3.3s ease-in-out infinite}
+@keyframes chibiIdle{0%,100%{translate:0 0}50%{translate:0 -3px}}
+.chibi i{position:absolute;display:block}
+.chibi .face{z-index:3;left:9px;top:12px;width:25px;height:25px;border-radius:45% 45% 48% 48%;background:linear-gradient(145deg,#ffe3c9,#eab69a);border:1px solid #9c6f68}
+.chibi .hair{z-index:4;left:7px;top:5px;width:29px;height:18px;border-radius:15px 15px 7px 7px;background:#243047;box-shadow:0 -3px 0 #536a8d}
+.chibi .hair:before{content:"";position:absolute;left:-2px;top:9px;width:9px;height:17px;background:inherit;border-radius:8px 2px 7px 8px;transform:rotate(12deg)}
+.chibi .hair:after{content:"";position:absolute;right:-2px;top:8px;width:8px;height:16px;background:inherit;border-radius:2px 8px 8px 4px;transform:rotate(-12deg)}
+.chibi .hair-pink{background:#d85d9f;box-shadow:0 -3px 0 #ffb1d9}
+.chibi .hair-brown{background:#633f36;box-shadow:0 -3px 0 #b98b65}
+.chibi .hair-blue{background:#283e78;box-shadow:0 -3px 0 #83bfff}
+.chibi .hair-gold{background:#c68b39;box-shadow:0 -3px 0 #ffdf8b}
+.chibi .eye{z-index:5;top:23px;width:4px;height:5px;border-radius:50%;background:#26324a;box-shadow:0 0 0 1px #fff6}
+.chibi .eye-left{left:15px}.chibi .eye-right{left:25px}
+.chibi .body{z-index:2;left:6px;top:35px;width:32px;height:17px;border-radius:10px 10px 5px 5px;background:#3477a7;border:1px solid #9bdfff;box-shadow:inset 0 3px 0 #ffffff26}
+.chibi .outfit-pink{background:linear-gradient(90deg,#c54f95,#ff9ed2);border-color:#ffd4eb}
+.chibi .outfit-mint{background:linear-gradient(90deg,#218d87,#69e6c5);border-color:#b2fff0}
+.chibi .outfit-violet{background:linear-gradient(90deg,#6653b9,#b5a3ff);border-color:#e0d9ff}
+.chibi .outfit-gold{background:linear-gradient(90deg,#b27a27,#ffd078);border-color:#fff0bb}
+.human-bot .bot-label{font-size:9px;padding:3px 7px;backdrop-filter:blur(8px)}
+.human-bot .bot-role{font-size:8px;padding:2px 5px;border-radius:4px;background:#071323c9}
+.bot-char.selected .human-avatar{transform:translateY(-3px) scale(1.12)}
+.bot-char:hover .chibi{animation-duration:1.2s}
+@media(max-width:700px){.world{height:420px;min-width:560px}.office-window>b{font-size:16px}.scene-hud{left:9px;right:9px;top:8px}.scene-hud>b{display:none}.human-avatar{width:43px;height:50px}.chibi{transform:scale(.92);transform-origin:bottom center}.hybrid-room{top:34%;height:51%}.hub-platform{width:18%;left:41%}}
