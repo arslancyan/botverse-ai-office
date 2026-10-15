@@ -98,6 +98,11 @@ try {
   const deleteProject = await request('/api/projects/' + project.id, { method: 'DELETE' });
   assert.equal(deleteProject.status, 204, 'project should be deletable');
 
+  const publishAttempt = await request('/api/jobs', { method: 'POST', body: { kind: 'publish', payload: { channel: 'YouTube', content: 'Must not be published' } } });
+  assert.equal(publishAttempt.status, 403, 'publishing must be rejected until official OAuth and approval exist');
+  const runsResponse = await request('/api/agent-runs');
+  assert.equal(runsResponse.status, 200, 'agent run records should be queryable');
+
   const jobResponse = await request('/api/jobs', {
     method: 'POST',
     body: { kind: 'agent_draft', payload: { agent: 'orbit', prompt: 'Draft a production checklist' } },
