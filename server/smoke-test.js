@@ -84,6 +84,23 @@ try {
   const deleteProject = await request('/api/projects/' + project.id, { method: 'DELETE' });
   assert.equal(deleteProject.status, 204, 'project should be deletable');
 
+  const jobResponse = await request('/api/jobs', {
+    method: 'POST',
+    body: { kind: 'agent_draft', payload: { agent: 'orbit', prompt: 'Draft a production checklist' } },
+  });
+  assert.equal(jobResponse.status, 201, 'queue job should be created');
+  const job = (await jobResponse.json()).data;
+  assert.equal(job.status, 'queued');
+  const jobList = await request('/api/jobs');
+  assert.equal(jobList.status, 200);
+  assert.ok((await jobList.json()).data.some((item) => item.id === job.id), 'job should appear in its workspace');
+  const otherJobs = await request('/api/jobs', { workspace: 'ci-other-workspace' });
+  assert.equal((await otherJobs.json()).data.some((item) => item.id === job.id), false, 'workspaces must not see each other’s jobs');
+  const cancelJob = await request('/api/jobs/' + job.id, { method: 'PATCH', body: { status: 'cancelled' } });
+  assert.equal(cancelJob.status, 200, 'queued job should be cancellable');
+  const deleteJob = await request('/api/jobs/' + job.id, { method: 'DELETE' });
+  assert.equal(deleteJob.status, 204, 'cancelled job should be deletable');
+
   const activityResponse = await request('/api/activity');
   assert.equal(activityResponse.status, 200);
   assert.ok((await activityResponse.json()).data.some((item) => item.text.includes('CI test project')), 'mutations should be recorded in activity');
