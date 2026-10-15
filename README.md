@@ -1,28 +1,35 @@
-# BOTVERSE — AI Virtual Office
+# BOTVERSE — Creator OS
 
-BOTVERSE is an interactive, responsive prototype for a game-like AI office dashboard.
+A responsive creator-company workspace with a cozy, isometric-inspired office and cute robot teammates.
 
-## Current MVP
+## Features in this MVP
 
-- Isometric-inspired virtual office with five selectable robot agents.
-- Agent profiles for ORBIT (Manager), BYTE (Developer), PIXEL (Designer), ECHO (Marketing), and SCOUT (Research).
-- Create tasks, assign an agent, set priority, change status, and delete tasks.
-- Activity log, workspace export to JSON, zoom controls, responsive mobile/tablet layout.
-- Local persistence using browser `localStorage`.
-- Task and activity state is explicitly labeled as a local simulation.
+- **Creator Office:** CSS-rendered pseudo-3D studio with animated robot mascots ORBIT, PIXEL, ECHO, BYTE, and SCOUT.
+- **Content Calendar:** month view; click a date to plan a content item.
+- **Production Pipeline:** create/edit/delete content tasks and move them through Idea → Scripting → Editing → Ready → Scheduled → Published.
+- **Projects & Campaigns:** organize content series, define goals, channel, status, and target dates.
+- **AI Team:** role profiles and task assignments for studio lead, editor, social manager, scripts/tools, and trend researcher.
+- **Dashboard & Analytics:** local workflow counts and channel mix. These are not live social-platform metrics.
+- **Workspace backup:** export/import JSON, local browser persistence, activity log, reset demo data.
+- Responsive layouts for desktop, tablet, and mobile.
 
-## Run it
+## Run / publish
 
-Open `index.html` in a modern browser, or enable GitHub Pages for this repository.
+This is a static site. Open `index.html` in a browser or enable GitHub Pages for the repository:
+**Settings → Pages → Deploy from a branch → main → /(root)**.
 
 ## Important limitations
 
-This frontend is a prototype. Agents do **not** call an AI model or execute work yet. Data is stored in the current browser only and is not shared across devices. Do not paste API secrets into the frontend.
+This release is a frontend prototype. The robot agents do not run AI models, social accounts are not connected, scheduled posts are not actually published, and analytics are based only on local task records. Browser storage is local to one browser/device and does not sync between devices.
 
-## Next milestones
+Never place secret API keys in public frontend files.
 
-1. Split the single HTML file into maintainable CSS and JavaScript modules.
-2. Deploy a preview with GitHub Pages.
-3. Add a secure backend, persistent database, authentication, and server-side secrets.
-4. Connect an AI provider and a controlled task execution layer.
-5. Add realtime task updates and richer 3D models when the product flow is validated.
+## Roadmap
+
+1. Backend API, authentication, and shared database.
+2. Secure AI provider integration and tool permissions.
+3. Media asset library and production brief templates.
+4. Official platform integrations where APIs and account permissions allow.
+5. Server-side scheduling, retry/error monitoring, and publishing approvals.
+6. Live performance analytics, audit logs, and multi-user access.
+7. Upgrade robot characters and environment to a true 3D engine after workflow validation.
