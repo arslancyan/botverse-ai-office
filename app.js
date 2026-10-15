@@ -230,10 +230,13 @@ $('workspaceName').value=safeLoad('bv.creator.name','BOTVERSE Creator Office');r
  function selectBot(button){
    const id=button.dataset.agent, bot=info[id]||info.orbit;
    world.querySelectorAll('.bot-char').forEach(b=>{b.classList.toggle('selected',b===button);b.style.zIndex=b===button?'8':'7'});
-   $('cubeBotEmoji').textContent=bot.emoji;$('cubeBotName').textContent=bot.name;$('cubeBotRole').textContent=bot.role;$('cubeBotDetail').textContent=bot.detail;
+   const state=agentWorkState(id);
+   $('cubeBotEmoji').textContent=bot.emoji;$('cubeBotName').textContent=bot.name;$('cubeBotRole').textContent=bot.role;
+   $('cubeBotDetail').textContent=state.label+' · '+state.detail;
    card.hidden=false;
-   const old=selectedAgent;selectedAgent=id;
-   if(typeof renderTeam==='function') {try{renderTeam()}catch{}}
+   selectedAgent=id;
+   selectAgent(id);
+   renderAgentStates();
  }
  world.querySelectorAll('.bot-char').forEach(button=>button.addEventListener('click',()=>selectBot(button)));
  world.querySelectorAll('.cube-room-tag').forEach(tag=>tag.addEventListener('click',()=>{
@@ -247,8 +250,14 @@ $('workspaceName').value=safeLoad('bv.creator.name','BOTVERSE Creator Office');r
  $('cubeTasksBtn')?.addEventListener('click',()=>{const b=document.querySelector('[data-page="pipeline"]');if(b)b.click()});
  $('cubeAssignBtn')?.addEventListener('click',()=>{const b=$('newTaskBtn');if(b)b.click();setTimeout(()=>{if($('taskAgent'))$('taskAgent').value=selectedAgent},50)});
  $('cubeBotClose')?.addEventListener('click',()=>{card.hidden=true});
- const active=tasks.filter(t=>t.status!=='Published').length,done=tasks.filter(t=>t.status==='Published').length;
- if($('cubeActiveTasks'))$('cubeActiveTasks').textContent=active;
- if($('cubeCompletedTasks'))$('cubeCompletedTasks').textContent=done;
- if($('cubeOnlineCount'))$('cubeOnlineCount').textContent=AGENTS.length+' ONLINE';
+ function refreshCubeSummary(){
+   const active=tasks.filter(t=>t.status!=='Published').length,done=tasks.filter(t=>t.status==='Published').length;
+   if($('cubeActiveTasks'))$('cubeActiveTasks').textContent=active;
+   if($('cubeCompletedTasks'))$('cubeCompletedTasks').textContent=done;
+   if($('cubeOnlineCount'))$('cubeOnlineCount').textContent=AGENTS.length+' TEAMMATES';
+ }
+ refreshCubeSummary();
+ document.addEventListener('click',e=>{
+   if(e.target.closest('[data-task-action]')||e.target.closest('#taskSubmit')||e.target.closest('#boardNewTask'))setTimeout(()=>{refreshCubeSummary();renderAgentStates()},0);
+ });
 })();
